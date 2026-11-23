@@ -124,9 +124,10 @@
 
   <div class="tabbar" role="tablist" data-i18n-aria="tab.aria" aria-label="주요 화면">
     <div class="wrap tabbar__inner">
-      <button class="tab is-active" type="button" role="tab" id="tab-hall" aria-controls="panel-hall" aria-selected="true" data-tab="hall"><span aria-hidden="true">🏛️</span><span data-i18n="tab.hall">명예의 전당</span></button>
-      <button class="tab" type="button" role="tab" id="tab-board" aria-controls="panel-board" aria-selected="false" data-tab="board"><span aria-hidden="true">💳</span><span data-i18n="tab.board">탕감 보드</span></button>
-      <button class="tab" type="button" role="tab" id="tab-model" aria-controls="panel-model" aria-selected="false" data-tab="model"><span aria-hidden="true">💼</span><span data-i18n="tab.model">수익 모델</span></button>
+      <button class="tab is-active" type="button" role="tab" id="tab-hall" aria-controls="panel-hall" aria-selected="true" data-tab="hall"><span aria-hidden="true">🏛️</span><span data-i18n="tab.hall" data-tab-label>명예의 전당</span></button>
+      <button class="tab" type="button" role="tab" id="tab-board" aria-controls="panel-board" aria-selected="false" data-tab="board"><span aria-hidden="true">💳</span><span data-i18n="tab.board" data-tab-label>탕감 보드</span></button>
+      <button class="tab" type="button" role="tab" id="tab-model" aria-controls="panel-model" aria-selected="false" data-tab="model"><span aria-hidden="true">💼</span><span data-i18n="tab.model" data-tab-label>수익 모델</span></button>
+      <button class="tab" type="button" role="tab" id="tab-community" aria-controls="panel-community" aria-selected="false" data-tab="community"><span aria-hidden="true">💬</span><span data-i18n="tab.community" data-tab-label>커뮤니티</span></button>
     </div>
   </div>
 
@@ -364,6 +365,90 @@
       <p class="legal" data-i18n-html="legal">이 화면은 사업 구조를 설명하기 위한 <strong>컨셉 시뮬레이션</strong>입니다. 실제 서비스가 되려면 기부금품 모집·전자금융·개인정보·세무 검토가 선행되어야 하며, 본 프로토타입은 법률·투자 자문이 아닙니다.</p>
     </div>
   </section>
+  <!-- ============ TAB 4 : 오픈 응원 커뮤니티 ============ -->
+  <section class="panel" id="panel-community" role="tabpanel" aria-labelledby="tab-community" tabindex="-1" hidden>
+    <div class="wrap">
+      <header class="section-head">
+        <div>
+          <p class="eyebrow">THE OPEN CIRCLE</p>
+          <h2 data-i18n="community.title">오픈 응원 커뮤니티</h2>
+          <p class="section-head__sub" data-i18n="community.sub">후원자의 소감, 탕감으로 새 출발한 이들의 감사 편지, 그리고 방문자의 응원이 한자리에 모입니다. 서로의 하루를 밝히는 말만 남겨 주세요.</p>
+        </div>
+        <p class="section-head__count" id="community-count"></p>
+      </header>
+
+      <p class="community-note" role="note">
+        <span class="community-note__mark" aria-hidden="true">✎</span>
+        <span data-i18n="community.note">프로토타입 커뮤니티 · 작성한 글과 댓글은 현재 기기 브라우저에만 저장되며 외부 서버로 전송되지 않습니다.</span>
+      </p>
+
+      <div class="community-layout">
+        <aside class="community-side">
+          <button class="btn btn--primary community-write" type="button" id="community-write" aria-expanded="true" aria-controls="community-composer">
+            <span aria-hidden="true">✍️</span><span data-i18n="community.write">새 글 남기기</span>
+          </button>
+
+          <form class="composer" id="community-composer" novalidate>
+            <div class="composer__head">
+              <h3 data-i18n="community.formTitle">새 글 남기기</h3>
+              <p data-i18n="community.formSub">남긴 글은 이 기기에만 저장됩니다. 실명보다 닉네임을 권합니다.</p>
+            </div>
+
+            <fieldset class="catpick">
+              <legend data-i18n="community.catLabel">말머리</legend>
+              <label class="catpick__opt"><input type="radio" name="post-cat" value="patron"><span data-i18n="community.cat.patron">후원자 소감</span></label>
+              <label class="catpick__opt"><input type="radio" name="post-cat" value="gratitude"><span data-i18n="community.cat.gratitude">감사 후기</span></label>
+              <label class="catpick__opt"><input type="radio" name="post-cat" value="support" checked><span data-i18n="community.cat.support">자유 응원</span></label>
+            </fieldset>
+
+            <div class="field">
+              <label for="post-name"><span data-i18n="community.nameLabel">이름</span> <span class="field__optional" data-i18n="community.optional">(선택)</span></label>
+              <input type="text" id="post-name" maxlength="20" autocomplete="off" placeholder="익명의 아너스" data-i18n-placeholder="community.namePh">
+              <p class="field__help" id="post-name-help"></p>
+            </div>
+
+            <div class="field">
+              <label for="post-title"><span data-i18n="community.titleLabel">제목</span> <span class="field__optional" data-i18n="community.optional">(선택)</span></label>
+              <input type="text" id="post-title" maxlength="80" autocomplete="off" placeholder="한 줄 제목" data-i18n-placeholder="community.titlePh">
+            </div>
+
+            <div class="field">
+              <label for="post-body" data-i18n="community.bodyLabel">내용</label>
+              <textarea id="post-body" rows="4" maxlength="400" placeholder="응원의 말이나 소감을 남겨 주세요." data-i18n-placeholder="community.bodyPh"></textarea>
+              <p class="field__help"><span id="post-count">0</span><span data-i18n="community.counter">/400자</span></p>
+            </div>
+
+            <p class="composer__error" id="post-error" hidden></p>
+
+            <div class="composer__actions">
+              <button class="btn btn--primary" type="submit" id="post-submit" data-i18n="community.submit">등록하기</button>
+              <button class="btn btn--ghost" type="button" id="post-cancel" data-i18n="community.cancel">접기</button>
+            </div>
+          </form>
+
+          <div class="community-guide">
+            <p class="community-guide__title" data-i18n="community.guideTitle">세 가지 말머리</p>
+            <ul>
+              <li><b data-i18n="community.cat.patron">후원자 소감</b><span data-i18n="community.guide.patron">캠페인에 참여한 후원자의 소감과 매칭 챌린지 소식</span></li>
+              <li><b data-i18n="community.cat.gratitude">감사 후기</b><span data-i18n="community.guide.gratitude">탕감으로 새 출발한 이들의 근황 편지</span></li>
+              <li><b data-i18n="community.cat.support">자유 응원</b><span data-i18n="community.guide.support">일반 방문자의 응원과 공감</span></li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="community-main">
+          <div class="filters" role="group" data-i18n-aria="community.filters" aria-label="커뮤니티 카테고리">
+            <button class="chip chip--filter is-active" type="button" data-community-filter="all" aria-pressed="true" data-i18n="filter.all">전체</button>
+            <button class="chip chip--filter" type="button" data-community-filter="patron" aria-pressed="false" data-i18n="community.cat.patron">후원자 소감</button>
+            <button class="chip chip--filter" type="button" data-community-filter="gratitude" aria-pressed="false" data-i18n="community.cat.gratitude">감사 후기</button>
+            <button class="chip chip--filter" type="button" data-community-filter="support" aria-pressed="false" data-i18n="community.cat.support">자유 응원</button>
+          </div>
+          <div class="feed" id="community-feed" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site-footer">

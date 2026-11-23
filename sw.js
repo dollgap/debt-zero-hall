@@ -1,6 +1,6 @@
 /* ZEROED — THE PRIVATE HONOR LEDGER · service worker
    Caches the static app shell so the app opens offline. */
-var CACHE = 'zeroed-shell-v4';
+var CACHE = 'zeroed-shell-v5';
 var ASSETS = [
   './',
   './index.html',
