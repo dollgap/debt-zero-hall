@@ -1,58 +1,60 @@
-from PIL import Image, ImageDraw
-import math
+"""Generate ZEROED PWA icons from the Z·Ø monogram (assets/img/logo-monogram.png).
+
+The monogram is a transparent PNG, so each icon draws it over the obsidian
+house background with a soft brushed-gold glow. Run from the repo root:
+    python3 make_icons.py
+"""
+from PIL import Image, ImageDraw, ImageFilter
 
 S = 1024
-GOLD = (201, 163, 73)
-GOLD_BRIGHT = (237, 219, 159)
 INK = (10, 9, 12)
+GOLD = (201, 163, 73)
 
-def bg(size, maskable=False):
+
+def bg(size):
+    """Obsidian plate with a warm radial glow behind the mark."""
     img = Image.new("RGB", (size, size), INK)
     d = ImageDraw.Draw(img)
-    # radial glow
-    cx, cy = size/2, size*0.42
-    steps = 220
+    cx, cy = size / 2, size * 0.44
+    steps = 240
     for i in range(steps, 0, -1):
-        r = size*0.78*i/steps
-        a = 0.30*(1-i/steps)**1.6
-        col = (int(INK[0]+ (52)*a), int(INK[1]+ (44)*a), int(INK[2]+ (20)*a))
-        d.ellipse([cx-r, cy-r, cx+r, cy+r], fill=col)
-    # subtle vertical warm gradient bottom
-    for y in range(size):
-        t = y/size
-        v = int(6*(1-t))
-        d.line([(0,y),(size,y)], fill=(INK[0]+v, INK[1]+v, INK[2]+v))
+        r = size * 0.82 * i / steps
+        a = 0.34 * (1 - i / steps) ** 1.7
+        col = (int(INK[0] + 62 * a), int(INK[1] + 50 * a), int(INK[2] + 22 * a))
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=col)
+    # thin gold hairline frame
+    d.rectangle([size * 0.055, size * 0.055, size * 0.945, size * 0.945],
+                outline=(int(GOLD[0] * 0.45), int(GOLD[1] * 0.45), int(GOLD[2] * 0.45)),
+                width=max(1, int(size * 0.004)))
     return img
 
-def draw_emblem(img, scale=1.0):
-    """Lightning bolt mark for ZEROED."""
-    size = img.size[0]
-    d = ImageDraw.Draw(img, "RGBA")
-    c = size / 2
-    def P(x, y):
-        return (c + x * size * scale, c + y * size * scale)
-    bolt = [
-        P(0.055, -0.30), P(-0.205, 0.045), P(-0.020, 0.045),
-        P(-0.075, 0.30), P(0.205, -0.045), P(0.020, -0.045),
-        P(0.055, -0.30)
-    ]
-    d.polygon(bolt, fill=GOLD_BRIGHT + (255,))
-    # subtle inner gold rim
-    d.line(bolt + [bolt[0]], fill=GOLD + (255,), width=max(2, int(size * 0.006 * scale)))
-    return img
 
-# full icon
-img = bg(S)
-draw_emblem(img, 1.0)
-img.save("assets/icons/icon-512.png", optimize=True)
-img.resize((192,192), Image.LANCZOS).save("assets/icons/icon-192.png", optimize=True)
+def compose(size, mark_height):
+    plate = bg(size).convert("RGBA")
+    mark = Image.open("assets/img/logo-monogram.png").convert("RGBA")
+    h = int(size * mark_height)
+    w = round(mark.width * h / mark.height)
+    mark = mark.resize((w, h), Image.LANCZOS)
 
-# maskable: safe zone -> emblem smaller (80% content, centered)
-m = bg(S)
-d = ImageDraw.Draw(m)
-draw_emblem(m, 0.74)
-m.save("assets/icons/icon-maskable-512.png", optimize=True)
+    # soft gold bloom under the mark
+    bloom = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    bd = ImageDraw.Draw(bloom)
+    bx, by = (size - w) / 2, (size - h) / 2
+    bd.ellipse([bx - w * 0.15, by - h * 0.08, bx + w * 1.15, by + h * 1.08],
+               fill=(201, 163, 73, 46))
+    bloom = bloom.filter(ImageFilter.GaussianBlur(size * 0.06))
+    plate = Image.alpha_composite(plate, bloom)
+    plate.alpha_composite(mark, (int((size - w) / 2), int((size - h) / 2)))
+    return plate
 
-# apple touch 180
-img.resize((180,180), Image.LANCZOS).save("assets/icons/apple-touch-icon.png", optimize=True)
-print("icons done")
+
+full = compose(S, 0.60)
+full.resize((512, 512), Image.LANCZOS).convert("RGB").save("assets/icons/icon-512.png", optimize=True)
+full.resize((192, 192), Image.LANCZOS).convert("RGB").save("assets/icons/icon-192.png", optimize=True)
+full.resize((180, 180), Image.LANCZOS).convert("RGB").save("assets/icons/apple-touch-icon.png", optimize=True)
+
+# maskable: keep the mark inside the central 80% safe zone
+maskable = compose(S, 0.46)
+maskable.resize((512, 512), Image.LANCZOS).convert("RGB").save("assets/icons/icon-maskable-512.png", optimize=True)
+
+print("icons done — Z·Ø monogram")

@@ -1,6 +1,6 @@
-/* ZEROED — GLOBAL HONOR LEDGER · service worker
+/* ZEROED — THE PRIVATE HONOR LEDGER · service worker
    Caches the static app shell so the app opens offline. */
-var CACHE = 'zeroed-shell-v3';
+var CACHE = 'zeroed-shell-v4';
 var ASSETS = [
   './',
   './index.html',
@@ -9,10 +9,12 @@ var ASSETS = [
   './assets/js/i18n.js',
   './assets/js/app.js',
   './manifest.webmanifest',
+  './assets/img/logo-monogram.png',
   './assets/icons/favicon.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
-  './assets/icons/icon-maskable-512.png'
+  './assets/icons/icon-maskable-512.png',
+  './assets/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', function (event) {

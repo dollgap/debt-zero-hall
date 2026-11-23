@@ -1,5 +1,5 @@
 /* =========================================================
-   ZEROED — GLOBAL HONOR LEDGER · prototype app
+   ZEROED — THE PRIVATE HONOR LEDGER · prototype app
    Vanilla JS · no build step · GitHub Pages friendly
    Bilingual (ko / en) · all data is demo only.
    ========================================================= */
@@ -252,6 +252,24 @@
     return (e && e.nickname) ? e.nickname : t('js.certDefaultName');
   }
 
+  /* ---------------- honor tiers ---------------- */
+  var TIERS = [
+    { key: 'SOVEREIGN', min: 1000000000 },
+    { key: 'PATRON', min: 100000000 },
+    { key: 'LAUREATE', min: 10000000 },
+    { key: 'HONOR', min: 0 }
+  ];
+  function tierOf(amount) {
+    var v = num(amount);
+    for (var i = 0; i < TIERS.length; i++) {
+      if (v >= TIERS[i].min) return TIERS[i];
+    }
+    return TIERS[TIERS.length - 1];
+  }
+  function tierTitle(tier) {
+    return t('tier.title' + tier.key.charAt(0) + tier.key.slice(1).toLowerCase());
+  }
+
   function myPlates() {
     var groups = {};
     state.entries.forEach(function (e) {
@@ -411,6 +429,11 @@
     top.appendChild(rankWrap);
 
     var badges = h('span', 'plaque__badges');
+    var tier = tierOf(row.amount);
+    var tierBadge = h('span', 'badge badge--tier', tier.key);
+    tierBadge.setAttribute('data-tier', tier.key);
+    tierBadge.title = tierTitle(tier);
+    badges.appendChild(tierBadge);
     if (row.mine) badges.appendChild(h('span', 'badge badge--gold', t('js.mine')));
     (row.badges || []).forEach(function (b) { badges.appendChild(h('span', 'badge', b)); });
     top.appendChild(badges);
@@ -882,6 +905,12 @@
     var data = lc.data;
     var c = lc.caseId ? caseById(lc.caseId) : null;
     $('#cert-name').textContent = data.name;
+    var tier = tierOf(data.amount);
+    var tierEl = $('#cert-tier');
+    tierEl.textContent = tier.key;
+    tierEl.setAttribute('data-tier', tier.key);
+    tierEl.setAttribute('aria-label', t('cert.tierAria', { tier: tier.key }));
+    tierEl.title = tierTitle(tier);
     $('#cert-amount').textContent = t('js.certAmount', { money: fmtMoney(data.amount) });
     $('#cert-msg').textContent = data.message ? '“' + data.message + '”' : '';
     $('#cert-rank').textContent = data.rank ? t('js.certRank', { n: data.rank }) : t('js.certRankNone');
@@ -892,6 +921,9 @@
 
     var shareBtn = $('#cert-share');
     shareBtn.onclick = function () { shareCert(data); };
+
+    var saveBtn = $('#cert-save');
+    if (saveBtn) saveBtn.onclick = function () { downloadHonorCard(data); };
   }
 
   function shareCert(data) {
@@ -939,6 +971,304 @@
     } catch (err) {
       toast(t('js.copyBlocked'));
     }
+  }
+
+  /* ---------------- honor card · canvas PNG ---------------- */
+  var CARD_W = 1200;
+  var CARD_H = 750;
+  var CARD_IVORY = '#f7f2e6';
+  var CARD_GOLD = '#c9a349';
+  var CARD_GOLD_BRIGHT = '#eddb9f';
+  var logoPromise = null;
+
+  function loadLogoImage() {
+    if (!logoPromise) {
+      logoPromise = new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () { resolve(img); };
+        img.onerror = function () { resolve(null); };
+        img.src = './assets/img/logo-monogram.png';
+      });
+    }
+    return logoPromise;
+  }
+  function setFont(ctx, spec, spacing) {
+    ctx.font = spec;
+    try { ctx.letterSpacing = (spacing || 0) + 'px'; } catch (err) {}
+  }
+  function fitFont(ctx, text, maxWidth, weight, maxSize, family, spacing) {
+    var size = maxSize;
+    while (size > 14) {
+      setFont(ctx, weight + ' ' + size + 'px ' + family, spacing);
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 2;
+    }
+    return size;
+  }
+  function cardTokens(ctx, text, maxWidth) {
+    var words = String(text).split(/\s+/).filter(Boolean);
+    var out = [];
+    words.forEach(function (w) {
+      if (ctx.measureText(w).width <= maxWidth) { out.push(w); return; }
+      var buf = '';
+      for (var i = 0; i < w.length; i++) {
+        var t2 = buf + w.charAt(i);
+        if (buf && ctx.measureText(t2).width > maxWidth) { out.push(buf); buf = w.charAt(i); }
+        else buf = t2;
+      }
+      if (buf) out.push(buf);
+    });
+    return out;
+  }
+  function wrapText(ctx, text, maxWidth, maxLines) {
+    var tokens = cardTokens(ctx, text, maxWidth);
+    var lines = [];
+    var line = '';
+    var idx = 0;
+    for (; idx < tokens.length; idx++) {
+      var test = line ? line + ' ' + tokens[idx] : tokens[idx];
+      if (!line || ctx.measureText(test).width <= maxWidth) {
+        line = test;
+      } else {
+        lines.push(line);
+        line = tokens[idx];
+        if (lines.length === maxLines - 1) { idx += 1; break; }
+      }
+    }
+    if (line) lines.push(line);
+    if (idx < tokens.length) {
+      var last = lines[lines.length - 1];
+      while (last.length > 4 && ctx.measureText(last + ' …').width > maxWidth) last = last.slice(0, -1);
+      lines[lines.length - 1] = last.replace(/[\s,.;:]+$/, '') + ' …';
+    }
+    return lines.slice(0, maxLines);
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawHonorCard(ctx, data, logo) {
+    var W = CARD_W;
+    var H = CARD_H;
+    var tier = tierOf(data.amount);
+    var name = String(data.name || t('card.noName'));
+    var quote = String(data.message || t('card.noMessage'));
+    var serial = String(data.serial || 'ZRD-2026-0000');
+
+    var base = ctx.createLinearGradient(0, 0, W, H);
+    base.addColorStop(0, '#131118');
+    base.addColorStop(0.55, '#0b0a0e');
+    base.addColorStop(1, '#07060a');
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, W, H);
+
+    var glow = ctx.createRadialGradient(W * 0.2, -90, 40, W * 0.2, -90, 800);
+    glow.addColorStop(0, 'rgba(201,163,73,0.26)');
+    glow.addColorStop(0.42, 'rgba(201,163,73,0.08)');
+    glow.addColorStop(1, 'rgba(201,163,73,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    var glow2 = ctx.createRadialGradient(W * 0.94, H * 1.08, 20, W * 0.94, H * 1.08, 640);
+    glow2.addColorStop(0, 'rgba(120,96,160,0.12)');
+    glow2.addColorStop(1, 'rgba(120,96,160,0)');
+    ctx.fillStyle = glow2;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.save();
+    ctx.globalAlpha = 0.045;
+    ctx.strokeStyle = CARD_IVORY;
+    ctx.lineWidth = 1;
+    for (var gx = -H; gx < W; gx += 26) {
+      ctx.beginPath();
+      ctx.moveTo(gx, H);
+      ctx.lineTo(gx + H, 0);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    roundRect(ctx, 34, 34, W - 68, H - 68, 6);
+    ctx.strokeStyle = 'rgba(201,163,73,0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    roundRect(ctx, 46, 46, W - 92, H - 92, 3);
+    ctx.strokeStyle = 'rgba(201,163,73,0.22)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(237,219,159,0.72)';
+    ctx.lineWidth = 2;
+    [[46, 46, 1, 1], [W - 46, 46, -1, 1], [46, H - 46, 1, -1], [W - 46, H - 46, -1, -1]].forEach(function (c) {
+      ctx.beginPath();
+      ctx.moveTo(c[0], c[1] + 26 * c[3]);
+      ctx.lineTo(c[0], c[1]);
+      ctx.lineTo(c[0] + 26 * c[2], c[1]);
+      ctx.stroke();
+    });
+
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+
+    if (logo) {
+      ctx.drawImage(logo, 86, 72, 70, 92);
+    } else {
+      ctx.strokeStyle = 'rgba(201,163,73,0.6)';
+      ctx.strokeRect(86, 72, 70, 92);
+    }
+    setFont(ctx, '600 30px "Cinzel", "Cormorant Garamond", serif', 9);
+    ctx.fillStyle = CARD_IVORY;
+    ctx.fillText('ZEROED', 172, 116);
+    setFont(ctx, '500 11px "Cinzel", "Cormorant Garamond", serif', 4.4);
+    ctx.fillStyle = 'rgba(201,163,73,0.9)';
+    ctx.fillText('THE PRIVATE HONOR LEDGER', 173, 139);
+
+    ctx.textAlign = 'right';
+    setFont(ctx, '500 10px "Cinzel", serif', 4);
+    ctx.fillStyle = 'rgba(201,163,73,0.68)';
+    ctx.fillText(t('card.tierLabel'), W - 86, 104);
+    var tierSize = fitFont(ctx, tier.key, 300, '600', 34, '"Cinzel", serif', 7);
+    setFont(ctx, '600 ' + tierSize + 'px "Cinzel", serif', 7);
+    ctx.fillStyle = CARD_GOLD_BRIGHT;
+    ctx.fillText(tier.key, W - 86, 144);
+
+    var div = ctx.createLinearGradient(86, 0, W - 86, 0);
+    div.addColorStop(0, 'rgba(201,163,73,0)');
+    div.addColorStop(0.5, 'rgba(201,163,73,0.5)');
+    div.addColorStop(1, 'rgba(201,163,73,0)');
+    ctx.fillStyle = div;
+    ctx.fillRect(86, 186, W - 172, 1);
+
+    ctx.textAlign = 'left';
+    setFont(ctx, '600 11px "Cinzel", serif', 6);
+    ctx.fillStyle = 'rgba(201,163,73,0.92)';
+    ctx.fillText(t('card.kicker'), 86, 236);
+
+    var nameSize = fitFont(ctx, name, W - 172, '700', 58, '"Noto Serif KR", "Cinzel", "Cormorant Garamond", serif', 0);
+    setFont(ctx, '700 ' + nameSize + 'px "Noto Serif KR", "Cinzel", "Cormorant Garamond", serif', 0);
+    ctx.fillStyle = CARD_IVORY;
+    ctx.fillText(name, 86, 318);
+
+    var amountText = fmtMoney(data.amount);
+    var amountSize = fitFont(ctx, amountText, 720, '600', 40, '"Cinzel", "Noto Serif KR", serif', 0);
+    setFont(ctx, '600 ' + amountSize + 'px "Cinzel", "Noto Serif KR", serif', 0);
+    ctx.fillStyle = CARD_GOLD_BRIGHT;
+    ctx.fillText(amountText, 86, 382);
+
+    ctx.fillStyle = 'rgba(201,163,73,0.6)';
+    ctx.fillRect(86, 412, 64, 2);
+
+    setFont(ctx, '400 23px "Noto Serif KR", "Cormorant Garamond", serif', 0);
+    ctx.fillStyle = 'rgba(247,242,230,0.8)';
+    var quoteLines = wrapText(ctx, '“' + quote + '”', W - 300, 2);
+    quoteLines.forEach(function (line, i) {
+      ctx.fillText(line, 86, 462 + i * 36);
+    });
+
+    setFont(ctx, '500 9px "Cinzel", serif', 3.4);
+    ctx.fillStyle = 'rgba(201,163,73,0.65)';
+    ctx.fillText(t('card.serialLabel'), 86, 566);
+    var serialSize = fitFont(ctx, serial, W - 340, '500', 21, '"Cinzel", serif', 2.6);
+    setFont(ctx, '500 ' + serialSize + 'px "Cinzel", serif', 2.6);
+    ctx.fillStyle = 'rgba(247,242,230,0.92)';
+    ctx.fillText(serial, 86, 596);
+    setFont(ctx, '400 12px "Noto Serif KR", "Cormorant Garamond", serif', 1.2);
+    ctx.fillStyle = 'rgba(247,242,230,0.45)';
+    ctx.fillText(fmtDate(data.date), 86, 624);
+
+    var sx = W - 150;
+    var sy = 592;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 52, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(201,163,73,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(sx, sy, 45, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(201,163,73,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    setFont(ctx, '600 17px "Cinzel", serif', 3.5);
+    ctx.fillStyle = 'rgba(237,219,159,0.92)';
+    ctx.fillText('ZEROED', sx, sy + 2);
+    setFont(ctx, '500 7px "Cinzel", serif', 2);
+    ctx.fillStyle = 'rgba(201,163,73,0.8)';
+    ctx.fillText('EST. 2026', sx, sy + 20);
+
+    ctx.textAlign = 'center';
+    setFont(ctx, '500 9px "Cinzel", serif', 3.2);
+    ctx.fillStyle = 'rgba(247,242,230,0.3)';
+    ctx.fillText(t('card.demo'), W / 2, 676);
+    ctx.textAlign = 'left';
+    return ctx;
+  }
+
+  function buildHonorCardCanvas(data) {
+    var canvas = document.createElement('canvas');
+    canvas.width = CARD_W;
+    canvas.height = CARD_H;
+    var ctx = canvas.getContext('2d');
+    var name = String(data.name || t('card.noName'));
+    var jobs = [loadLogoImage()];
+    if (document.fonts && document.fonts.load) {
+      ['600 30px "Cinzel"', '700 58px "Noto Serif KR"', '400 23px "Noto Serif KR"'].forEach(function (spec) {
+        try {
+          jobs.push(document.fonts.load(spec, name + ' ZEROED 가나다').catch(function () {}));
+        } catch (err) {}
+      });
+    }
+    if (document.fonts && document.fonts.ready) {
+      jobs.push(document.fonts.ready.catch(function () {}));
+    }
+    return Promise.all(jobs).then(function (out) {
+      drawHonorCard(ctx, data, out[0]);
+      return canvas;
+    });
+  }
+
+  function downloadHonorCard(data) {
+    var btn = $('#cert-save');
+    if (btn && btn.disabled) return;
+    var original = btn ? btn.textContent : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('cert.saving');
+    }
+    function restore() {
+      if (!btn) return;
+      btn.disabled = false;
+      btn.textContent = original || t('cert.save');
+    }
+    buildHonorCardCanvas(data).then(function (canvas) {
+      return new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) {
+          if (!blob) { reject(new Error('empty blob')); return; }
+          var serial = String(data.serial || 'ZRD-2026').replace(/[^A-Za-z0-9._-]/g, '');
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'ZEROED_Honor_Card_' + serial + '.png';
+          a.rel = 'noopener';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.setTimeout(function () { URL.revokeObjectURL(url); }, 8000);
+          resolve(blob);
+        }, 'image/png');
+      });
+    }).then(function () {
+      toast(t('card.saved'), 'ok');
+      restore();
+    }).catch(function () {
+      toast(t('card.failed'));
+      restore();
+    });
   }
 
   /* ---------------- toast ---------------- */

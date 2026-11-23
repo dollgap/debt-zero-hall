@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>⚡ ZEROED — 글로벌 부채 탕감 명예의 전당 (프로토타입)</title>
-<meta name="description" id="meta-desc" content="돈은 숫자로 남지만, 누군가의 빚을 0으로 만든 순간은 전설이 됩니다. 후원금 100%로 한 사람의 빚을 지우고 글로벌 명예의 전당에 이름을 영구 등재하는 구조를 체험하는 인터랙티브 컨셉 프로토타입.">
+<title>ZEROED — 가진 것을 넘어, 남기는 품격으로 (프로토타입)</title>
+<meta name="description" id="meta-desc" content="삶에서 지워 준 빚의 무게만큼, 당신의 이름은 아너스 명예의 전당에 영구히 남습니다. 후원금 100%로 한 사람의 빚을 지우고 프라이빗 아너 레저에 이름을 새기는 인터랙티브 컨셉 프로토타입.">
 <meta name="theme-color" content="#0a090c">
 <meta name="color-scheme" content="dark">
 <meta name="application-name" content="ZEROED">
@@ -13,14 +13,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta property="og:type" content="website">
-<meta property="og:title" id="og-title" content="⚡ ZEROED — GLOBAL HONOR LEDGER">
-<meta property="og:description" id="og-desc" content="Wealth is measured in zeros. Greatness is measured in the debts you zero.">
+<meta property="og:title" id="og-title" content="ZEROED — THE PRIVATE HONOR LEDGER">
+<meta property="og:description" id="og-desc" content="Beyond Fortune. Pure Legacy.">
 <meta property="og:locale" id="og-locale" content="ko_KR">
 <meta property="og:site_name" content="ZEROED">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+KR:wght@300;400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="./assets/css/styles.css">
 <script>
@@ -57,13 +60,11 @@
   <div class="topbar__inner wrap">
     <a class="brand" href="#hall" data-i18n-aria="brand.home" aria-label="ZEROED 홈">
       <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 40 40" role="img" focusable="false">
-          <path d="M23.4 4 10 22.6h7.1L16.2 36 30 17.2h-7.2L23.4 4Z" fill="currentColor"/>
-        </svg>
+        <img src="./assets/img/logo-monogram.png" alt="" width="38" height="50" decoding="async">
       </span>
       <span class="brand__text">
         <span class="brand__name">ZEROED</span>
-        <span class="brand__tag">GLOBAL HONOR LEDGER</span>
+        <span class="brand__tag" data-i18n="brand.tagline">THE PRIVATE HONOR LEDGER</span>
       </span>
     </a>
     <div class="topbar__tools">
@@ -81,17 +82,15 @@
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero__glow" aria-hidden="true"></div>
-    <div class="hero__arch" aria-hidden="true"></div>
+    <div class="hero__halo" aria-hidden="true"></div>
     <div class="wrap hero__inner">
-      <p class="eyebrow">GLOBAL HONOR LEDGER · WEALTH INTO FREEDOM</p>
+      <p class="eyebrow" data-i18n="hero.eyebrow">THE PRIVATE HONOR LEDGER · BEYOND FORTUNE</p>
+      <img class="hero__emblem" src="./assets/img/logo-monogram.png" alt="" aria-hidden="true" width="122" height="160" decoding="async">
       <h1 id="hero-title">
-        <span class="hero__bolt" aria-hidden="true">
-          <svg viewBox="0 0 24 32" focusable="false"><path d="M14.6 0 2 19h8.2L8 32l14.4-19.6h-8.6L14.6 0Z" fill="currentColor"/></svg>
-        </span>
         <span class="hero__name">ZEROED</span>
       </h1>
-      <p class="hero__sub" data-i18n="hero.sub">돈은 숫자로 남지만, 누군가의 빚을 0으로 만든 순간은 전설이 됩니다.</p>
-      <p class="hero__lead" data-i18n-html="hero.desc">후원금 <strong>100%</strong>로 한 사람의 빚을 지우고, <strong>글로벌 명예의 전당</strong>에 이름을 영구 등재하세요.</p>
+      <p class="hero__sub" data-i18n="hero.sub">가진 것을 넘어, 남기는 품격으로.</p>
+      <p class="hero__lead" data-i18n="hero.desc">“삶에서 지워 준 빚의 무게만큼, 당신의 이름은 아너스 명예의 전당에 영구히 남습니다.”</p>
       <div class="hero__cta">
         <button class="btn btn--primary" type="button" data-goto="board" data-i18n="hero.cta1">탕감 체험하기</button>
         <button class="btn btn--ghost" type="button" data-goto="hall" data-i18n="hero.cta2">명예의 전당 보기</button>
@@ -150,6 +149,14 @@
         <button class="chip chip--filter" type="button" data-hall-filter="recent" aria-pressed="false" data-i18n="filter.recent">최근 참여</button>
       </div>
 
+      <div class="tier-legend" role="group" data-i18n-aria="tier.aria" aria-label="명예 등급 기준">
+        <span class="tier-legend__label" data-i18n="tier.label">명예 등급</span>
+        <span class="tier-legend__item" data-tier="SOVEREIGN"><b>SOVEREIGN</b><span data-i18n="tier.sovereign">10억 원 이상</span></span>
+        <span class="tier-legend__item" data-tier="PATRON"><b>PATRON</b><span data-i18n="tier.patron">1억 원 이상</span></span>
+        <span class="tier-legend__item" data-tier="LAUREATE"><b>LAUREATE</b><span data-i18n="tier.laureate">1,000만 원 이상</span></span>
+        <span class="tier-legend__item" data-tier="HONOR"><b>HONOR</b><span data-i18n="tier.honor">그 외</span></span>
+      </div>
+
       <div class="mine" id="hall-mine" hidden>
         <div class="mine__label"><span class="dot-live" aria-hidden="true"></span><span data-i18n="mine.label">내 명패 · 방금 등재</span></div>
         <div class="mine__body">
@@ -161,8 +168,8 @@
       <div class="wall" id="hall-list" aria-live="polite"></div>
 
       <aside class="note-card">
-        <h3 data-i18n="hall.badgeTitle">인증 배지 안내</h3>
-        <p data-i18n-html="hall.badgeText">명패의 <strong>공익신탁 연동</strong> · <strong>신용회복 연동</strong> · <strong>법률구조 연동</strong> · <strong>장학재단 연동</strong> 배지는 “후원금 집행을 제휴 공익기관이 직접 확인한다”는 컨셉 표시입니다. 이 프로토타입에서는 실제 연동이 이루어지지 않으며, 모든 기관명은 예시입니다.</p>
+        <h3 data-i18n="hall.badgeTitle">인증 배지 · 명예 등급 안내</h3>
+        <p data-i18n-html="hall.badgeText">명패의 <strong>공익신탁 연동</strong> · <strong>신용회복 연동</strong> · <strong>법률구조 연동</strong> · <strong>장학재단 연동</strong> 배지는 “후원금 집행을 제휴 공익기관이 직접 확인한다”는 컨셉 표시입니다. 명예 등급(SOVEREIGN · PATRON · LAUREATE · HONOR)은 누적 탕감 금액으로 정해지며, 이 프로토타입에서는 실제 연동이 이루어지지 않고 모든 기관명은 예시입니다.</p>
       </aside>
     </div>
   </section>
@@ -362,8 +369,8 @@
 <footer class="site-footer">
   <div class="wrap footer__inner">
     <div class="footer__brand">
-      <p class="footer__logo">ZEROED <span>GLOBAL HONOR LEDGER</span></p>
-      <p class="footer__tag" data-i18n="footer.tag">글로벌 부채 탕감 명예 클럽 — 인터랙티브 컨셉 프로토타입</p>
+      <p class="footer__logo">ZEROED <span data-i18n="brand.tagline">THE PRIVATE HONOR LEDGER</span></p>
+      <p class="footer__tag" data-i18n="footer.tag">프라이빗 아너 레저 — 인터랙티브 컨셉 프로토타입</p>
     </div>
     <div class="footer__legal">
       <p><strong data-i18n="footer.legalTitle">가상 시연 안내</strong> <span data-i18n="footer.legalText">이 사이트의 모든 사연·후원자·기관·금액은 예시이며 실제 인물·기관과 무관합니다. 결제·송금·후원 기능은 없고, 입력한 닉네임과 한마디는 사용자의 브라우저에만 저장됩니다.</span></p>
@@ -385,7 +392,8 @@
       <p class="cert__kicker" data-i18n="cert.kicker">ZEROED 명예 인증서</p>
       <h2 class="cert__title" id="cert-title">명예 인증서</h2>
       <p class="cert__to" data-i18n="cert.to">아래의 이름으로 ZEROED 명예의 전당 등재를 인증합니다</p>
-      <p class="cert__name" id="cert-name">익명의 후원자</p>
+      <p class="cert__name" id="cert-name">익명의 아너스</p>
+      <p class="cert__tier" id="cert-tier" data-tier="HONOR" data-i18n-aria="cert.tierAria">SOVEREIGN</p>
       <p class="cert__amount" id="cert-amount">0원</p>
       <blockquote class="cert__msg" id="cert-msg"></blockquote>
       <dl class="cert__meta">
@@ -395,15 +403,16 @@
         <div><dt data-i18n="cert.serialLabel">인증번호</dt><dd id="cert-serial">ZRD-2026-0000</dd></div>
       </dl>
       <div class="cert__sign">
-        <p class="cert__foot"><span class="cert__foot-title" data-i18n="cert.footTitle">ZEROED · GLOBAL HONOR LEDGER</span><span data-i18n="cert.footSub">프로토타입 발급 · 법적 효력 없음</span></p>
+        <p class="cert__foot"><span class="cert__foot-title" data-i18n="cert.footTitle">ZEROED · THE PRIVATE HONOR LEDGER</span><span data-i18n="cert.footSub">프로토타입 발급 · 법적 효력 없음</span></p>
         <div class="cert__seal" aria-hidden="true"><span data-i18n="cert.seal">ZEROED</span></div>
       </div>
     </div>
     <div class="modal__actions">
-      <button class="btn btn--primary" type="button" id="cert-share" data-i18n="cert.share">공유 카드 문구 복사</button>
+      <button class="btn btn--primary" type="button" id="cert-save" data-i18n="cert.save">🖼️ 명예 카드 저장 (PNG)</button>
+      <button class="btn btn--ghost" type="button" id="cert-share" data-i18n="cert.share">공유 카드 문구 복사</button>
       <button class="btn btn--ghost" type="button" data-close="cert" data-i18n="cert.close">닫기</button>
     </div>
-    <p class="modal__fineprint" data-i18n="cert.fineprint">시연용 인증서입니다. 실제 법적 효력이 없으며, 이미지 저장 기능은 제공하지 않습니다.</p>
+    <p class="modal__fineprint" data-i18n="cert.fineprint">시연용 인증서입니다. 실제 법적 효력이 없습니다. 명예 카드는 이 브라우저에서 그려져 어디에도 전송되지 않습니다.</p>
   </div>
 </div>
 
@@ -427,8 +436,8 @@
 
     <div class="field">
       <label for="relief-nickname" data-i18n="relief.nameLabel">명패에 새길 이름</label>
-      <input type="text" id="relief-nickname" maxlength="20" autocomplete="off" data-i18n-placeholder="relief.namePh" placeholder="익명의 후원자">
-      <p class="field__help" data-i18n-html="relief.nameHelp">비워두면 <strong>익명의 후원자</strong>로 등재됩니다. 실명 대신 닉네임을 권합니다.</p>
+      <input type="text" id="relief-nickname" maxlength="20" autocomplete="off" data-i18n-placeholder="relief.namePh" placeholder="익명의 아너스">
+      <p class="field__help" data-i18n-html="relief.nameHelp">비워두면 <strong>익명의 아너스</strong>로 등재됩니다. 실명 대신 닉네임을 권합니다.</p>
     </div>
 
     <div class="field">

@@ -1,4 +1,4 @@
-/* ZEROED — GLOBAL HONOR LEDGER · DEMO DATA
+/* ZEROED — THE PRIVATE HONOR LEDGER · DEMO DATA
    Every person, organization and amount is fictional. No real payments or transfers. */
 (function (global) {
   'use strict';
