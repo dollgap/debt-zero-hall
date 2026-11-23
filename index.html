@@ -1,55 +1,79 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>노블레스 제로 · NOBLESSE ZERO — 품격 있는 부채 탕감 명예의 전당 (프로토타입)</title>
-<meta name="description" content="진짜 부의 완성은, 남의 빚을 지우는 품격입니다. 기업 오너와 자산가의 후원이 100% 그대로 채무자의 빚을 지우고, 그 이름은 아너스 명예의 전당에 영구 등재되는 구조를 체험하는 인터랙티브 컨셉 프로토타입.">
+<title>⚡ ZEROED — 글로벌 부채 탕감 명예의 전당 (프로토타입)</title>
+<meta name="description" id="meta-desc" content="돈은 숫자로 남지만, 누군가의 빚을 0으로 만든 순간은 전설이 됩니다. 후원금 100%로 한 사람의 빚을 지우고 글로벌 명예의 전당에 이름을 영구 등재하는 구조를 체험하는 인터랙티브 컨셉 프로토타입.">
 <meta name="theme-color" content="#0a090c">
 <meta name="color-scheme" content="dark">
-<meta name="application-name" content="노블레스 제로">
+<meta name="application-name" content="ZEROED">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="노블레스 제로">
+<meta name="apple-mobile-web-app-title" content="ZEROED">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta property="og:type" content="website">
-<meta property="og:title" content="노블레스 제로 · NOBLESSE ZERO">
-<meta property="og:description" content="진짜 부의 완성은, 남의 빚을 지우는 품격입니다. 후원금 100%가 채무자의 빚을 지우고, 이름은 명예의 전당에 영구 등재됩니다.">
-<meta property="og:locale" content="ko_KR">
+<meta property="og:title" id="og-title" content="⚡ ZEROED — GLOBAL HONOR LEDGER">
+<meta property="og:description" id="og-desc" content="Wealth is measured in zeros. Greatness is measured in the debts you zero.">
+<meta property="og:locale" id="og-locale" content="ko_KR">
+<meta property="og:site_name" content="ZEROED">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="./assets/css/styles.css">
+<script>
+/* Language boot: resolve ?lang= before first paint so EN opens in English. */
+(function () {
+  try {
+    var m = (location.search || '').match(/[?&]lang=(ko|en)/i);
+    var lang = m ? m[1].toLowerCase() : null;
+    if (!lang) {
+      try { lang = window.localStorage.getItem('zeroed:lang'); } catch (e) {}
+    }
+    if (lang !== 'ko' && lang !== 'en') lang = 'ko';
+    window.__ZEROED_LANG__ = lang;
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.classList.add('i18n-boot');
+    window.setTimeout(function () {
+      document.documentElement.classList.remove('i18n-boot');
+    }, 1600);
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
-<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<a class="skip-link" href="#main" data-i18n="a11y.skip">본문으로 건너뛰기</a>
 
 <div class="demo-banner" role="note">
   <span class="demo-banner__dot" aria-hidden="true"></span>
-  <strong>프로토타입 데모</strong>
-  <span>모든 인물·기관·금액은 예시이며, 실제 결제·송금·정보 수집은 없습니다.</span>
+  <strong data-i18n="banner.strong">프로토타입 데모</strong>
+  <span data-i18n="banner.text">모든 인물·기관·금액은 예시이며, 실제 결제·송금·정보 수집은 없습니다.</span>
 </div>
 
 <header class="topbar">
-  <div class="topbar__inner">
-    <a class="brand" href="#hall" aria-label="노블레스 제로 홈">
+  <div class="topbar__inner wrap">
+    <a class="brand" href="#hall" data-i18n-aria="brand.home" aria-label="ZEROED 홈">
       <span class="brand__mark" aria-hidden="true">
         <svg viewBox="0 0 40 40" role="img" focusable="false">
-          <path d="M6 31V17a14 14 0 0 1 28 0v14" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M12 31V18a8 8 0 0 1 16 0v13" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
-          <circle cx="20" cy="24" r="3.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M23.4 4 10 22.6h7.1L16.2 36 30 17.2h-7.2L23.4 4Z" fill="currentColor"/>
         </svg>
       </span>
       <span class="brand__text">
-        <span class="brand__ko">노블레스 제로</span>
-        <span class="brand__en">NOBLESSE ZERO</span>
+        <span class="brand__name">ZEROED</span>
+        <span class="brand__tag">GLOBAL HONOR LEDGER</span>
       </span>
     </a>
-    <div class="topbar__meta">
-      <span class="chip chip--ghost">PWA · 오프라인 지원</span>
-      <span class="chip chip--live"><i aria-hidden="true"></i>시연 중</span>
+    <div class="topbar__tools">
+      <div class="lang-toggle" role="group" data-i18n-aria="lang.label" aria-label="언어 선택">
+        <button class="lang-toggle__btn is-active" type="button" data-set-lang="ko" aria-pressed="true">KOR</button>
+        <span class="lang-toggle__sep" aria-hidden="true">|</span>
+        <button class="lang-toggle__btn" type="button" data-set-lang="en" aria-pressed="false">ENG</button>
+      </div>
+      <span class="chip chip--ghost" data-i18n="chip.pwa">PWA · 오프라인 지원</span>
+      <span class="chip chip--live"><i aria-hidden="true"></i><span data-i18n="chip.live">시연 중</span></span>
     </div>
   </div>
 </header>
@@ -59,52 +83,51 @@
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__arch" aria-hidden="true"></div>
     <div class="wrap hero__inner">
-      <p class="eyebrow">PRIVATE HONOR CLUB · NOBLESSE OBLIGE · DEBT RELIEF</p>
+      <p class="eyebrow">GLOBAL HONOR LEDGER · WEALTH INTO FREEDOM</p>
       <h1 id="hero-title">
-        <span class="hero__ko">노블레스 제로</span>
-        <span class="hero__en">NOBLESSE ZERO</span>
+        <span class="hero__bolt" aria-hidden="true">
+          <svg viewBox="0 0 24 32" focusable="false"><path d="M14.6 0 2 19h8.2L8 32l14.4-19.6h-8.6L14.6 0Z" fill="currentColor"/></svg>
+        </span>
+        <span class="hero__name">ZEROED</span>
       </h1>
-      <p class="hero__lead">
-        진짜 부의 완성은, 남의 빚을 지우는 품격입니다.<br>
-        기업 오너와 자산가의 후원이 <strong>100% 그대로</strong> 채무자의 빚을 지우고,<br>
-        그 이름은 아너스 명예의 전당에 영구 등재됩니다.
-      </p>
+      <p class="hero__sub" data-i18n="hero.sub">돈은 숫자로 남지만, 누군가의 빚을 0으로 만든 순간은 전설이 됩니다.</p>
+      <p class="hero__lead" data-i18n-html="hero.desc">후원금 <strong>100%</strong>로 한 사람의 빚을 지우고, <strong>글로벌 명예의 전당</strong>에 이름을 영구 등재하세요.</p>
       <div class="hero__cta">
-        <button class="btn btn--primary" type="button" data-goto="board">탕감 체험하기</button>
-        <button class="btn btn--ghost" type="button" data-goto="hall">명예의 전당 보기</button>
+        <button class="btn btn--primary" type="button" data-goto="board" data-i18n="hero.cta1">탕감 체험하기</button>
+        <button class="btn btn--ghost" type="button" data-goto="hall" data-i18n="hero.cta2">명예의 전당 보기</button>
       </div>
 
-      <div class="impact" aria-label="실시간 누적 임팩트">
+      <div class="impact" data-i18n-aria="impact.aria" aria-label="실시간 누적 임팩트">
         <div class="impact__head">
-          <span class="impact__live"><i aria-hidden="true"></i>실시간 누적 임팩트</span>
-          <span class="impact__note">아래 금액은 시연용 예시 데이터입니다</span>
+          <span class="impact__live"><i aria-hidden="true"></i><span data-i18n="impact.live">실시간 누적 임팩트</span></span>
+          <span class="impact__note" data-i18n="impact.note">아래 금액은 시연용 예시 데이터입니다</span>
         </div>
         <div class="impact__grid">
           <div class="impact__item">
-            <p class="impact__label">누적 탕감 완료 금액</p>
+            <p class="impact__label" data-i18n="impact.label1">누적 탕감 완료 금액</p>
             <p class="impact__value" id="stat-amount" data-stat="amount">0원</p>
-            <p class="impact__sub" id="stat-amount-sub">2026년 누적 · 시연 데이터</p>
+            <p class="impact__sub" id="stat-amount-sub" data-i18n="impact.sub1">2026년 누적 · 시연 데이터</p>
           </div>
           <div class="impact__item">
-            <p class="impact__label">새 출발을 얻은 가구</p>
+            <p class="impact__label" data-i18n="impact.label2">새 출발을 얻은 가구</p>
             <p class="impact__value" id="stat-households" data-stat="households">0</p>
-            <p class="impact__sub" id="stat-households-sub">빚 0원 달성 가구</p>
+            <p class="impact__sub" id="stat-households-sub" data-i18n="impact.sub2">빚 0원 달성 가구</p>
           </div>
           <div class="impact__item">
-            <p class="impact__label">아너스 멤버 · 스폰서</p>
+            <p class="impact__label" data-i18n="impact.label3">명예 멤버 · 스폰서</p>
             <p class="impact__value" id="stat-sponsors" data-stat="sponsors">0</p>
-            <p class="impact__sub" id="stat-sponsors-sub">개인 · 기업</p>
+            <p class="impact__sub" id="stat-sponsors-sub" data-i18n="impact.sub3">개인 · 기업</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="tabbar" role="tablist" aria-label="주요 화면">
+  <div class="tabbar" role="tablist" data-i18n-aria="tab.aria" aria-label="주요 화면">
     <div class="wrap tabbar__inner">
-      <button class="tab is-active" type="button" role="tab" id="tab-hall" aria-controls="panel-hall" aria-selected="true" data-tab="hall"><span aria-hidden="true">🏛️</span>명예의 전당</button>
-      <button class="tab" type="button" role="tab" id="tab-board" aria-controls="panel-board" aria-selected="false" data-tab="board"><span aria-hidden="true">💳</span>탕감 보드</button>
-      <button class="tab" type="button" role="tab" id="tab-model" aria-controls="panel-model" aria-selected="false" data-tab="model"><span aria-hidden="true">💼</span>수익 모델</button>
+      <button class="tab is-active" type="button" role="tab" id="tab-hall" aria-controls="panel-hall" aria-selected="true" data-tab="hall"><span aria-hidden="true">🏛️</span><span data-i18n="tab.hall">명예의 전당</span></button>
+      <button class="tab" type="button" role="tab" id="tab-board" aria-controls="panel-board" aria-selected="false" data-tab="board"><span aria-hidden="true">💳</span><span data-i18n="tab.board">탕감 보드</span></button>
+      <button class="tab" type="button" role="tab" id="tab-model" aria-controls="panel-model" aria-selected="false" data-tab="model"><span aria-hidden="true">💼</span><span data-i18n="tab.model">수익 모델</span></button>
     </div>
   </div>
 
@@ -114,32 +137,32 @@
       <header class="section-head">
         <div>
           <p class="eyebrow">THE HONORS HALL</p>
-          <h2>명예의 전당</h2>
-          <p class="section-head__sub">아너스 명예의 전당에 영구히 새겨질 이름들. 명패를 누르면 디지털 명예 인증서가 열립니다.</p>
+          <h2 data-i18n="hall.title">명예의 전당</h2>
+          <p class="section-head__sub" data-i18n="hall.sub">영구히 새겨질 이름들. 명패를 누르면 디지털 명예 인증서가 열립니다.</p>
         </div>
-        <p class="section-head__count" id="hall-count">명패 0개</p>
+        <p class="section-head__count" id="hall-count"></p>
       </header>
 
-      <div class="filters" role="group" aria-label="명예의 전당 필터">
-        <button class="chip chip--filter is-active" type="button" data-hall-filter="all" aria-pressed="true">전체</button>
-        <button class="chip chip--filter" type="button" data-hall-filter="corp" aria-pressed="false">기업 스폰서</button>
-        <button class="chip chip--filter" type="button" data-hall-filter="person" aria-pressed="false">개인 고액기부자</button>
-        <button class="chip chip--filter" type="button" data-hall-filter="recent" aria-pressed="false">최근 참여</button>
+      <div class="filters" role="group" data-i18n-aria="hall.filters" aria-label="명예의 전당 필터">
+        <button class="chip chip--filter is-active" type="button" data-hall-filter="all" aria-pressed="true" data-i18n="filter.all">전체</button>
+        <button class="chip chip--filter" type="button" data-hall-filter="corp" aria-pressed="false" data-i18n="filter.corp">기업 스폰서</button>
+        <button class="chip chip--filter" type="button" data-hall-filter="person" aria-pressed="false" data-i18n="filter.person">개인 고액기부자</button>
+        <button class="chip chip--filter" type="button" data-hall-filter="recent" aria-pressed="false" data-i18n="filter.recent">최근 참여</button>
       </div>
 
       <div class="mine" id="hall-mine" hidden>
-        <div class="mine__label"><span class="dot-live" aria-hidden="true"></span>내 명패 · 방금 등재</div>
+        <div class="mine__label"><span class="dot-live" aria-hidden="true"></span><span data-i18n="mine.label">내 명패 · 방금 등재</span></div>
         <div class="mine__body">
           <div id="hall-mine-card"></div>
-          <p class="mine__note">내가 세운 명패는 <strong>이 브라우저에 저장</strong>됩니다. 새로고침해도 그대로 남고, 탕감 보드의 <strong>‘시연 데이터 초기화’</strong>로 처음부터 다시 해볼 수 있습니다.</p>
+          <p class="mine__note" data-i18n-html="mine.note">내가 세운 명패는 <strong>이 브라우저에 저장</strong>됩니다. 새로고침해도 그대로 남고, 탕감 보드의 <strong>‘시연 데이터 초기화’</strong>로 처음부터 다시 해볼 수 있습니다.</p>
         </div>
       </div>
 
       <div class="wall" id="hall-list" aria-live="polite"></div>
 
       <aside class="note-card">
-        <h3>인증 배지 안내</h3>
-        <p>명패의 <strong>공익신탁 연동</strong> · <strong>신용회복 연동</strong> · <strong>법률구조 연동</strong> · <strong>장학재단 연동</strong> 배지는 “후원금 집행을 제휴 공익기관이 직접 확인한다”는 컨셉 표시입니다. 이 프로토타입에서는 실제 연동이 이루어지지 않으며, 모든 기관명은 예시입니다.</p>
+        <h3 data-i18n="hall.badgeTitle">인증 배지 안내</h3>
+        <p data-i18n-html="hall.badgeText">명패의 <strong>공익신탁 연동</strong> · <strong>신용회복 연동</strong> · <strong>법률구조 연동</strong> · <strong>장학재단 연동</strong> 배지는 “후원금 집행을 제휴 공익기관이 직접 확인한다”는 컨셉 표시입니다. 이 프로토타입에서는 실제 연동이 이루어지지 않으며, 모든 기관명은 예시입니다.</p>
       </aside>
     </div>
   </section>
@@ -150,22 +173,22 @@
       <header class="section-head">
         <div>
           <p class="eyebrow">RELIEF BOARD</p>
-          <h2>탕감 보드</h2>
-          <p class="section-head__sub">제휴 공익기관이 확인한 사연만 올라옵니다. 후원금은 플랫폼을 거치지 않고 제휴 기관이 채무자에게 직접 집행합니다(컨셉).</p>
+          <h2 data-i18n="board.title">탕감 보드</h2>
+          <p class="section-head__sub" data-i18n="board.sub">제휴 공익기관이 확인한 사연만 올라옵니다. 후원금은 플랫폼을 거치지 않고 제휴 기관이 채무자에게 직접 집행합니다(컨셉).</p>
         </div>
-        <p class="section-head__count" id="board-count">사연 0건</p>
+        <p class="section-head__count" id="board-count"></p>
       </header>
 
       <div class="board-top">
-        <div class="filters" role="group" aria-label="사연 카테고리 필터">
-          <button class="chip chip--filter is-active" type="button" data-board-filter="all" aria-pressed="true">전체</button>
-          <button class="chip chip--filter" type="button" data-board-filter="smallbiz" aria-pressed="false">소상공인·재기</button>
-          <button class="chip chip--filter" type="button" data-board-filter="education" aria-pressed="false">청년·학자금</button>
-          <button class="chip chip--filter" type="button" data-board-filter="living" aria-pressed="false">긴급 생계·주거</button>
+        <div class="filters" role="group" data-i18n-aria="board.filters" aria-label="사연 카테고리 필터">
+          <button class="chip chip--filter is-active" type="button" data-board-filter="all" aria-pressed="true" data-i18n="filter.all">전체</button>
+          <button class="chip chip--filter" type="button" data-board-filter="smallbiz" aria-pressed="false" data-i18n="cat.smallbiz">소상공인·재기</button>
+          <button class="chip chip--filter" type="button" data-board-filter="education" aria-pressed="false" data-i18n="cat.education">청년·학자금</button>
+          <button class="chip chip--filter" type="button" data-board-filter="living" aria-pressed="false" data-i18n="cat.living">긴급 생계·주거</button>
         </div>
         <dl class="board-summary">
-          <div><dt>남은 잔액 합계</dt><dd id="board-remaining">0원</dd></div>
-          <div><dt>내가 체험한 탕감</dt><dd id="board-myTotal">0원</dd></div>
+          <div><dt data-i18n="board.sum1">남은 잔액 합계</dt><dd id="board-remaining">0원</dd></div>
+          <div><dt data-i18n="board.sum2">내가 체험한 탕감</dt><dd id="board-myTotal">0원</dd></div>
         </dl>
       </div>
 
@@ -174,10 +197,10 @@
       <section class="ledger" id="ledger" hidden>
         <div class="ledger__head">
           <div>
-            <h3>내 체험 기록</h3>
-            <p>이 기록은 이 브라우저의 <code>localStorage</code>에만 저장됩니다. 새로고침해도 명패는 그대로 남습니다.</p>
+            <h3 data-i18n="ledger.title">내 체험 기록</h3>
+            <p data-i18n-html="ledger.note">이 기록은 이 브라우저의 <code>localStorage</code>에만 저장됩니다. 새로고침해도 명패는 그대로 남습니다.</p>
           </div>
-          <button class="btn btn--small btn--danger-ghost" type="button" id="reset-btn">시연 데이터 초기화</button>
+          <button class="btn btn--small btn--danger-ghost" type="button" id="reset-btn" data-i18n="ledger.reset">시연 데이터 초기화</button>
         </div>
         <ul class="ledger__list" id="ledger-list"></ul>
       </section>
@@ -190,148 +213,148 @@
       <header class="section-head">
         <div>
           <p class="eyebrow">BUSINESS &amp; SAFETY</p>
-          <h2>어떻게 지속 가능한가</h2>
-          <p class="section-head__sub">후원금에서는 0원을 떼지 않습니다. 플랫폼 매출은 기업 마케팅 예산과 B2B 구독료에서 나옵니다. 슬라이더를 움직여 직접 확인하세요.</p>
+          <h2 data-i18n="model.title">어떻게 지속 가능한가</h2>
+          <p class="section-head__sub" data-i18n="model.sub">후원금에서는 0원을 떼지 않습니다. 플랫폼 매출은 기업 마케팅 예산과 B2B 구독료에서 나옵니다. 슬라이더를 움직여 직접 확인하세요.</p>
         </div>
       </header>
 
       <div class="model-grid">
         <section class="sim-card" aria-labelledby="sim-title">
           <div class="sim-card__head">
-            <h3 id="sim-title">수익 시뮬레이터</h3>
-            <span class="chip chip--ghost">월 기준</span>
+            <h3 id="sim-title" data-i18n="sim.title">수익 시뮬레이터</h3>
+            <span class="chip chip--ghost" data-i18n="sim.chip">월 기준</span>
           </div>
 
           <div class="control">
             <div class="control__top">
-              <label for="sim-campaigns">월 스폰서 캠페인 수</label>
+              <label for="sim-campaigns" data-i18n="sim.camp.label">월 스폰서 캠페인 수</label>
               <output id="sim-campaigns-out" for="sim-campaigns">12건</output>
             </div>
             <input type="range" id="sim-campaigns" min="1" max="60" step="1" value="12" aria-describedby="sim-campaigns-help">
-            <p class="control__help" id="sim-campaigns-help">기업·고액기부자가 한 달에 여는 탕감 캠페인 수</p>
+            <p class="control__help" id="sim-campaigns-help" data-i18n="sim.camp.help">기업·고액기부자가 한 달에 여는 탕감 캠페인 수</p>
           </div>
 
           <div class="control">
             <div class="control__top">
-              <label for="sim-budget">건당 캠페인 스폰서십 예산</label>
+              <label for="sim-budget" data-i18n="sim.budget.label">건당 캠페인 스폰서십 예산</label>
               <output id="sim-budget-out" for="sim-budget">5,000만원</output>
             </div>
             <input type="range" id="sim-budget" min="10000000" max="500000000" step="10000000" value="50000000" aria-describedby="sim-budget-help">
-            <p class="control__help" id="sim-budget-help">전액이 그대로 탕감 집행액이 됩니다 (후원금 수수료 0%)</p>
+            <p class="control__help" id="sim-budget-help" data-i18n="sim.budget.help">전액이 그대로 탕감 집행액이 됩니다 (후원금 수수료 0%)</p>
           </div>
 
           <div class="control">
             <div class="control__top">
-              <label for="sim-subs">아너스·기업 명예관 PR 구독 수</label>
+              <label for="sim-subs" data-i18n="sim.subs.label">명예관 PR 구독 수</label>
               <output id="sim-subs-out" for="sim-subs">24곳</output>
             </div>
             <input type="range" id="sim-subs" min="0" max="300" step="4" value="24" aria-describedby="sim-subs-help">
-            <p class="control__help" id="sim-subs-help">기업·패밀리오피스가 자기 로비의 디지털 명예관을 운영하는 구독 (월 250만원/곳)</p>
+            <p class="control__help" id="sim-subs-help" data-i18n="sim.subs.help">기업·패밀리오피스가 자기 로비의 디지털 명예관을 운영하는 구독 (월 250만원/곳)</p>
           </div>
 
-          <p class="sim-card__assume">가정: 캠페인 기획·운영비는 기업이 <strong>별도로</strong> 지급(예산의 15%), 트래픽 제휴·광고 수익은 캠페인 1건당 180만원, 명예관 구독료는 월 250만원/곳. 후원금에서는 어떤 명목으로도 차감하지 않습니다.</p>
+          <p class="sim-card__assume" data-i18n-html="sim.assume">가정: 캠페인 기획·운영비는 기업이 <strong>별도로</strong> 지급(예산의 15%), 트래픽 제휴·광고 수익은 캠페인 1건당 180만원, 명예관 구독료는 월 250만원/곳. 후원금에서는 어떤 명목으로도 차감하지 않습니다.</p>
         </section>
 
         <section class="result-card" aria-labelledby="result-title">
           <h3 id="result-title" class="sr-only">시뮬레이션 결과</h3>
           <div class="result__hero">
-            <p class="result__label">이번 달 실제 탕감 집행액</p>
+            <p class="result__label" data-i18n="sim.reliefLabel">이번 달 실제 탕감 집행액</p>
             <p class="result__value" id="sim-relief">0원</p>
-            <p class="result__sub">후원금 100% 전액 · 플랫폼 수수료 0원</p>
+            <p class="result__sub" data-i18n="sim.reliefSub">후원금 100% 전액 · 플랫폼 수수료 0원</p>
           </div>
 
           <div class="result__break">
             <div class="result__row">
-              <span>① 기업 브랜드 스폰서십 · 캠페인 기획비</span>
+              <span data-i18n="sim.row1">① 기업 브랜드 스폰서십 · 캠페인 기획비</span>
               <strong id="sim-fee">0원</strong>
             </div>
             <div class="result__row">
-              <span>② 아너스·기업 명예관 PR 구독료(SaaS)</span>
+              <span data-i18n="sim.row2">② 명예관 PR 구독료(SaaS)</span>
               <strong id="sim-saas">0원</strong>
             </div>
             <div class="result__row">
-              <span>③ 트래픽 제휴 · 광고 수익</span>
+              <span data-i18n="sim.row3">③ 트래픽 제휴 · 광고 수익</span>
               <strong id="sim-traffic">0원</strong>
             </div>
             <div class="result__row result__row--total">
-              <span>플랫폼 월 매출</span>
+              <span data-i18n="sim.total">플랫폼 월 매출</span>
               <strong id="sim-revenue">0원</strong>
             </div>
           </div>
 
           <div class="result__meta">
-            <div><span>연 환산 매출</span><strong id="sim-year">0원</strong></div>
-            <div><span>월 고정 운영비(가정)</span><strong>9,000만원</strong></div>
-            <div><span>예상 월 영업이익</span><strong id="sim-profit">0원</strong></div>
-            <div><span>후원금 대비 플랫폼 매출</span><strong id="sim-ratio">0%</strong></div>
+            <div><span data-i18n="sim.meta1">연 환산 매출</span><strong id="sim-year">0원</strong></div>
+            <div><span data-i18n="sim.meta2">월 고정 운영비(가정)</span><strong id="sim-cost">0원</strong></div>
+            <div><span data-i18n="sim.meta3">예상 월 영업이익</span><strong id="sim-profit">0원</strong></div>
+            <div><span data-i18n="sim.meta4">후원금 대비 플랫폼 매출</span><strong id="sim-ratio">0%</strong></div>
           </div>
-          <p class="result__note">후원금 대비 비율은 “후원금에서 떼는 몫”이 아니라, 기업 마케팅 예산·구독료로 별도 발생하는 매출의 크기를 보여주는 지표입니다.</p>
+          <p class="result__note" data-i18n="sim.note">후원금 대비 비율은 “후원금에서 떼는 몫”이 아니라, 기업 마케팅 예산·구독료로 별도 발생하는 매출의 크기를 보여주는 지표입니다.</p>
         </section>
       </div>
 
       <section class="flow" aria-labelledby="flow-title">
-        <h3 id="flow-title">자금은 이렇게 흐릅니다</h3>
+        <h3 id="flow-title" data-i18n="flow.title">자금은 이렇게 흐릅니다</h3>
         <ol class="flow__steps">
-          <li><span class="flow__num">1</span><strong>기업·개인 스폰서</strong><span>캠페인 예산 약정</span></li>
-          <li><span class="flow__num">2</span><strong>제휴 공익신탁·재단</strong><span>에스크로 수납 · 채무 확인 · 세액공제 처리</span></li>
-          <li><span class="flow__num">3</span><strong>채무자 · 새 출발</strong><span>빚 직접 상환 → ZERO</span></li>
-          <li><span class="flow__num">4</span><strong>플랫폼</strong><span>트래픽·ESG 스폰서십·명예관 SaaS로 수익</span></li>
+          <li><span class="flow__num">1</span><strong data-i18n="flow.1.t">기업·개인 스폰서</strong><span data-i18n="flow.1.d">캠페인 예산 약정</span></li>
+          <li><span class="flow__num">2</span><strong data-i18n="flow.2.t">제휴 공익신탁·재단</strong><span data-i18n="flow.2.d">에스크로 수납 · 채무 확인 · 세액공제 처리</span></li>
+          <li><span class="flow__num">3</span><strong data-i18n="flow.3.t">채무자 · 새 출발</strong><span data-i18n="flow.3.d">빚 직접 상환 → ZERO</span></li>
+          <li><span class="flow__num">4</span><strong data-i18n="flow.4.t">플랫폼</strong><span data-i18n="flow.4.d">트래픽·ESG 스폰서십·명예관 SaaS로 수익</span></li>
         </ol>
-        <p class="flow__note"><strong>플랫폼은 돈을 만지지 않습니다.</strong> 후원금은 제휴 기관이 직접 수납·집행하고, 플랫폼은 기획비·구독료·광고 수익만 청구합니다.</p>
+        <p class="flow__note" data-i18n-html="flow.note"><strong>플랫폼은 돈을 만지지 않습니다.</strong> 후원금은 제휴 기관이 직접 수납·집행하고, 플랫폼은 기획비·구독료·광고 수익만 청구합니다.</p>
       </section>
 
       <section class="compare" aria-labelledby="compare-title">
-        <h3 id="compare-title">왜 자산가·기업이 기꺼이 참여하고 투자하는가</h3>
+        <h3 id="compare-title" data-i18n="compare.title">왜 자산가·기업이 기꺼이 참여하고 투자하는가</h3>
         <div class="compare__grid">
           <article class="compare__card compare__card--bad">
-            <header><span aria-hidden="true">❌</span><h4>위험한 모델</h4></header>
+            <header><span aria-hidden="true">❌</span><h4 data-i18n="compare.badTitle">위험한 모델</h4></header>
             <ul>
-              <li>개인 돈을 모아 <strong>플랫폼이 직접 송금</strong> → 전자금융거래법·기부금품법 위반 소지</li>
-              <li>기부금에서 <strong>수수료 차감</strong> → 여론 역풍, 신뢰 붕괴</li>
-              <li>채무자에게 현금 지급 → <strong>증여세</strong>·자금세탁 오해</li>
-              <li>이름·사연 노출 → 개인정보·인권 문제</li>
+              <li data-i18n-html="compare.bad1">개인 돈을 모아 <strong>플랫폼이 직접 송금</strong> → 전자금융거래법·기부금품법 위반 소지</li>
+              <li data-i18n-html="compare.bad2">기부금에서 <strong>수수료 차감</strong> → 여론 역풍, 신뢰 붕괴</li>
+              <li data-i18n-html="compare.bad3">채무자에게 현금 지급 → <strong>증여세</strong>·자금세탁 오해</li>
+              <li data-i18n-html="compare.bad4">이름·사연 노출 → 개인정보·인권 문제</li>
             </ul>
           </article>
           <article class="compare__card compare__card--good">
-            <header><span aria-hidden="true">⭕</span><h4>현실적인 모델</h4></header>
+            <header><span aria-hidden="true">⭕</span><h4 data-i18n="compare.goodTitle">현실적인 모델</h4></header>
             <ul>
-              <li>실제 <strong>수납·세액공제는 제휴 공익신탁·재단이 직접 처리</strong></li>
-              <li>플랫폼은 <strong>트래픽 + 기업 ESG 스폰서십 + 명예관 PR/SaaS</strong>로 수익</li>
-              <li>후원금 <strong>100% 집행</strong> → 언론·기업 ESG 보고서에 쓰이는 서사</li>
-              <li>사연은 <strong>기관 확인 + 익명 처리</strong>로 게시</li>
+              <li data-i18n-html="compare.good1">실제 <strong>수납·세액공제는 제휴 공익신탁·재단이 직접 처리</strong></li>
+              <li data-i18n-html="compare.good2">플랫폼은 <strong>트래픽 + 기업 ESG 스폰서십 + 명예관 PR/SaaS</strong>로 수익</li>
+              <li data-i18n-html="compare.good3">후원금 <strong>100% 집행</strong> → 언론·기업 ESG 보고서에 쓰이는 서사</li>
+              <li data-i18n-html="compare.good4">사연은 <strong>기관 확인 + 익명 처리</strong>로 게시</li>
             </ul>
           </article>
         </div>
       </section>
 
       <section class="reasons" aria-labelledby="reasons-title">
-        <h3 id="reasons-title">아너스가 기꺼이 참여하는 세 가지 이유</h3>
+        <h3 id="reasons-title" data-i18n="reasons.title">자산가·기업이 기꺼이 참여하는 세 가지 이유</h3>
         <div class="reasons__grid">
           <article class="reason">
-            <p class="reason__label">세액공제 연계</p>
-            <p>공익신탁·재단을 통한 기부금 세액공제로, 품격과 실리가 함께 남습니다.</p>
+            <p class="reason__label" data-i18n="reasons.1.label">세액공제 연계</p>
+            <p data-i18n="reasons.1.text">공익신탁·재단을 통한 기부금 세액공제로, 품격과 실리가 함께 남습니다.</p>
           </article>
           <article class="reason">
-            <p class="reason__label">브랜드 ESG 각인</p>
-            <p>명패와 인증서, ESG 보고서로 이어지는 서사가 기업의 품격을 각인시킵니다.</p>
+            <p class="reason__label" data-i18n="reasons.2.label">브랜드 ESG 각인</p>
+            <p data-i18n="reasons.2.text">명패와 인증서, ESG 보고서로 이어지는 서사가 기업의 품격을 각인시킵니다.</p>
           </article>
           <article class="reason">
-            <p class="reason__label">프라이빗 아너스 네트워킹</p>
-            <p>초청 전용 아너스 클럽에서 같은 뜻을 지닌 오너·자산가와 만납니다.</p>
+            <p class="reason__label" data-i18n="reasons.3.label">프라이빗 명예 네트워킹</p>
+            <p data-i18n="reasons.3.text">초청 전용 명예 클럽에서 같은 뜻을 지닌 오너·자산가와 만납니다.</p>
           </article>
         </div>
       </section>
 
       <section class="pitch" aria-labelledby="pitch-title">
-        <h3 id="pitch-title">누군가에게 설명할 때는 이렇게</h3>
+        <h3 id="pitch-title" data-i18n="pitch.title">누군가에게 설명할 때는 이렇게</h3>
         <ol class="pitch__list">
-          <li><strong>한 줄 정의</strong>“기업과 자산가가 한 사람의 빚을 대신 갚고, 그 이름이 명예의 전당에 영구히 새겨지는 구조입니다.”</li>
-          <li><strong>돈의 흐름</strong>“후원금은 제휴 공익신탁·재단이 직접 받아 채무자에게 집행합니다. 플랫폼은 한 푼도 떼지 않습니다.”</li>
-          <li><strong>수익 구조</strong>“수익은 기업의 ESG 캠페인 기획비, 아너스·기업 명예관 구독료, 트래픽 제휴에서 나옵니다.”</li>
+          <li data-i18n-html="pitch.1"><strong>한 줄 정의</strong>“기업과 자산가가 한 사람의 빚을 대신 갚고, 그 이름이 명예의 전당에 영구히 새겨지는 구조입니다.”</li>
+          <li data-i18n-html="pitch.2"><strong>돈의 흐름</strong>“후원금은 제휴 공익신탁·재단이 직접 받아 채무자에게 집행합니다. 플랫폼은 한 푼도 떼지 않습니다.”</li>
+          <li data-i18n-html="pitch.3"><strong>수익 구조</strong>“수익은 기업의 ESG 캠페인 기획비, 명예관 구독료, 트래픽 제휴에서 나옵니다.”</li>
         </ol>
       </section>
 
-      <p class="legal">이 화면은 사업 구조를 설명하기 위한 <strong>컨셉 시뮬레이션</strong>입니다. 실제 서비스가 되려면 기부금품 모집·전자금융·개인정보·세무 검토가 선행되어야 하며, 본 프로토타입은 법률·투자 자문이 아닙니다.</p>
+      <p class="legal" data-i18n-html="legal">이 화면은 사업 구조를 설명하기 위한 <strong>컨셉 시뮬레이션</strong>입니다. 실제 서비스가 되려면 기부금품 모집·전자금융·개인정보·세무 검토가 선행되어야 하며, 본 프로토타입은 법률·투자 자문이 아닙니다.</p>
     </div>
   </section>
 </main>
@@ -339,12 +362,12 @@
 <footer class="site-footer">
   <div class="wrap footer__inner">
     <div class="footer__brand">
-      <p class="footer__ko">노블레스 제로 <span>NOBLESSE ZERO</span></p>
-      <p class="footer__tag">품격 있는 부채 탕감 명예의 전당 — 인터랙티브 컨셉 프로토타입</p>
+      <p class="footer__logo">ZEROED <span>GLOBAL HONOR LEDGER</span></p>
+      <p class="footer__tag" data-i18n="footer.tag">글로벌 부채 탕감 명예 클럽 — 인터랙티브 컨셉 프로토타입</p>
     </div>
     <div class="footer__legal">
-      <p><strong>가상 시연 안내</strong> 이 사이트의 모든 사연·후원자·기관·금액은 예시이며 실제 인물·기관과 무관합니다. 결제·송금·후원 기능은 없고, 입력한 닉네임과 한마디는 사용자의 브라우저에만 저장됩니다.</p>
-      <p>© 2026 NOBLESSE ZERO prototype. Made for demonstration.</p>
+      <p><strong data-i18n="footer.legalTitle">가상 시연 안내</strong> <span data-i18n="footer.legalText">이 사이트의 모든 사연·후원자·기관·금액은 예시이며 실제 인물·기관과 무관합니다. 결제·송금·후원 기능은 없고, 입력한 닉네임과 한마디는 사용자의 브라우저에만 저장됩니다.</span></p>
+      <p data-i18n="footer.copy">© 2026 ZEROED prototype. Made for demonstration.</p>
     </div>
   </div>
 </footer>
@@ -353,34 +376,34 @@
 <div class="modal" id="cert-modal" hidden>
   <div class="modal__backdrop" data-close="cert"></div>
   <div class="modal__dialog modal__dialog--cert" role="dialog" aria-modal="true" aria-labelledby="cert-title">
-    <button class="modal__close" type="button" data-close="cert" aria-label="닫기">✕</button>
+    <button class="modal__close" type="button" data-close="cert" data-i18n-aria="common.close" aria-label="닫기">✕</button>
     <div class="cert" id="cert-body">
       <div class="cert__corner cert__corner--tl" aria-hidden="true"></div>
       <div class="cert__corner cert__corner--tr" aria-hidden="true"></div>
       <div class="cert__corner cert__corner--bl" aria-hidden="true"></div>
       <div class="cert__corner cert__corner--br" aria-hidden="true"></div>
-      <p class="cert__kicker">CERTIFICATE OF NOBLE HONOR</p>
+      <p class="cert__kicker" data-i18n="cert.kicker">ZEROED 명예 인증서</p>
       <h2 class="cert__title" id="cert-title">명예 인증서</h2>
-      <p class="cert__to">아래의 이름으로 NOBLESSE ZERO 명예의 전당 등재를 인증합니다</p>
-      <p class="cert__name" id="cert-name">익명의 노블레스</p>
+      <p class="cert__to" data-i18n="cert.to">아래의 이름으로 ZEROED 명예의 전당 등재를 인증합니다</p>
+      <p class="cert__name" id="cert-name">익명의 후원자</p>
       <p class="cert__amount" id="cert-amount">0원</p>
       <blockquote class="cert__msg" id="cert-msg"></blockquote>
       <dl class="cert__meta">
-        <div><dt>등재</dt><dd id="cert-rank">명예의 전당</dd></div>
-        <div><dt>탕감 건수</dt><dd id="cert-count">1건</dd></div>
-        <div><dt>발급일</dt><dd id="cert-date">2026.11.23</dd></div>
-        <div><dt>인증번호</dt><dd id="cert-serial">NZ-2026-0000</dd></div>
+        <div><dt data-i18n="cert.rankLabel">등재</dt><dd id="cert-rank">명예의 전당</dd></div>
+        <div><dt data-i18n="cert.countLabel">탕감 건수</dt><dd id="cert-count">1건</dd></div>
+        <div><dt data-i18n="cert.dateLabel">발급일</dt><dd id="cert-date">2026.11.23</dd></div>
+        <div><dt data-i18n="cert.serialLabel">인증번호</dt><dd id="cert-serial">ZRD-2026-0000</dd></div>
       </dl>
       <div class="cert__sign">
-        <p class="cert__foot">노블레스 제로 · NOBLESSE ZERO<br><span>프로토타입 발급 · 법적 효력 없음</span></p>
-        <div class="cert__seal" aria-hidden="true"><span>ZERO</span></div>
+        <p class="cert__foot"><span class="cert__foot-title" data-i18n="cert.footTitle">ZEROED · GLOBAL HONOR LEDGER</span><span data-i18n="cert.footSub">프로토타입 발급 · 법적 효력 없음</span></p>
+        <div class="cert__seal" aria-hidden="true"><span data-i18n="cert.seal">ZEROED</span></div>
       </div>
     </div>
     <div class="modal__actions">
-      <button class="btn btn--primary" type="button" id="cert-share">공유 카드 문구 복사</button>
-      <button class="btn btn--ghost" type="button" data-close="cert">닫기</button>
+      <button class="btn btn--primary" type="button" id="cert-share" data-i18n="cert.share">공유 카드 문구 복사</button>
+      <button class="btn btn--ghost" type="button" data-close="cert" data-i18n="cert.close">닫기</button>
     </div>
-    <p class="modal__fineprint">시연용 인증서입니다. 실제 법적 효력이 없으며, 이미지 저장 기능은 제공하지 않습니다.</p>
+    <p class="modal__fineprint" data-i18n="cert.fineprint">시연용 인증서입니다. 실제 법적 효력이 없으며, 이미지 저장 기능은 제공하지 않습니다.</p>
   </div>
 </div>
 
@@ -388,51 +411,51 @@
 <div class="modal" id="relief-modal" hidden>
   <div class="modal__backdrop" data-close="relief"></div>
   <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="relief-title">
-    <button class="modal__close" type="button" data-close="relief" aria-label="닫기">✕</button>
-    <p class="modal__kicker">SIMULATION · 대신 갚아주기 체험</p>
-    <h2 class="modal__title" id="relief-title">대신 갚아주기</h2>
+    <button class="modal__close" type="button" data-close="relief" data-i18n-aria="common.close" aria-label="닫기">✕</button>
+    <p class="modal__kicker" data-i18n="relief.kicker">SIMULATION · 대신 갚아주기 체험</p>
+    <h2 class="modal__title" id="relief-title" data-i18n="relief.title">대신 갚아주기</h2>
     <p class="modal__case" id="relief-case">사연 제목</p>
     <div class="relief-remain">
-      <span>남은 잔액</span>
+      <span data-i18n="relief.remain">남은 잔액</span>
       <strong id="relief-remain">0원</strong>
     </div>
 
     <fieldset class="amount-set">
-      <legend>탕감할 금액</legend>
+      <legend data-i18n="relief.legend">탕감할 금액</legend>
       <div class="amount-grid" id="amount-grid"></div>
     </fieldset>
 
     <div class="field">
-      <label for="relief-nickname">명패에 새길 이름</label>
-      <input type="text" id="relief-nickname" maxlength="20" autocomplete="off" placeholder="익명의 노블레스">
-      <p class="field__help">비워두면 <strong>익명의 노블레스</strong>로 등재됩니다. 실명 대신 닉네임을 권합니다.</p>
+      <label for="relief-nickname" data-i18n="relief.nameLabel">명패에 새길 이름</label>
+      <input type="text" id="relief-nickname" maxlength="20" autocomplete="off" data-i18n-placeholder="relief.namePh" placeholder="익명의 후원자">
+      <p class="field__help" data-i18n-html="relief.nameHelp">비워두면 <strong>익명의 후원자</strong>로 등재됩니다. 실명 대신 닉네임을 권합니다.</p>
     </div>
 
     <div class="field">
-      <label for="relief-message">한마디 <span class="field__optional">(선택)</span></label>
-      <textarea id="relief-message" rows="2" maxlength="60" placeholder="예) 오늘부로 빚 걱정 끝내세요. 내일을 응원합니다."></textarea>
-      <p class="field__help"><span id="msg-count">0</span>/60자</p>
+      <label for="relief-message"><span data-i18n="relief.msgLabel">한마디</span> <span class="field__optional" data-i18n="relief.optional">(선택)</span></label>
+      <textarea id="relief-message" rows="2" maxlength="60" data-i18n-placeholder="relief.msgPh" placeholder="예) 오늘부로 빚 걱정 끝내세요. 내일을 응원합니다."></textarea>
+      <p class="field__help"><span id="msg-count">0</span><span id="msg-suffix" data-i18n="relief.counter">/60자</span></p>
     </div>
 
     <div class="modal__actions">
-      <button class="btn btn--primary" type="button" id="relief-submit">탕감 실행 (체험)</button>
-      <button class="btn btn--ghost" type="button" data-close="relief">취소</button>
+      <button class="btn btn--primary" type="button" id="relief-submit" data-i18n="relief.submit">탕감 실행 (체험)</button>
+      <button class="btn btn--ghost" type="button" data-close="relief" data-i18n="relief.cancel">취소</button>
     </div>
-    <p class="modal__fineprint">실제 결제가 아닙니다. 금액은 시연용 숫자이며, 이름과 한마디는 이 브라우저에만 저장됩니다.</p>
+    <p class="modal__fineprint" data-i18n="relief.fineprint">실제 결제가 아닙니다. 금액은 시연용 숫자이며, 이름과 한마디는 이 브라우저에만 저장됩니다.</p>
   </div>
 </div>
 
 <!-- ============ 완료 오버레이 ============ -->
 <div class="complete" id="complete-overlay" hidden>
   <div class="complete__inner" role="dialog" aria-modal="true" aria-labelledby="complete-title">
-    <div class="complete__stamp" aria-hidden="true"><small>NOBLESSE</small>ZERO</div>
-    <p class="complete__kicker">100% 달성</p>
-    <h2 id="complete-title">탕감 완료 · ZERO</h2>
+    <div class="complete__stamp" aria-hidden="true"><small>JUST</small><span>ZEROED</span></div>
+    <p class="complete__kicker" data-i18n="complete.kicker">100% 달성</p>
+    <h2 id="complete-title" data-i18n="complete.title">오늘 또 한 가정이 ZEROED 되었습니다</h2>
     <p class="complete__case" id="complete-case"></p>
     <p class="complete__msg" id="complete-msg"></p>
     <div class="complete__actions">
-      <button class="btn btn--primary" type="button" id="complete-cert">명예 인증서 보기</button>
-      <button class="btn btn--ghost" type="button" id="complete-close">계속 둘러보기</button>
+      <button class="btn btn--primary" type="button" id="complete-cert" data-i18n="complete.cert">명예 인증서 보기</button>
+      <button class="btn btn--ghost" type="button" id="complete-close" data-i18n="complete.close">계속 둘러보기</button>
     </div>
   </div>
 </div>
@@ -441,11 +464,11 @@
 <div class="modal" id="confirm-modal" hidden>
   <div class="modal__backdrop" data-close="confirm"></div>
   <div class="modal__dialog modal__dialog--small" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-    <h2 class="modal__title" id="confirm-title">시연 데이터를 초기화할까요?</h2>
-    <p class="modal__text">이 브라우저에 저장된 내 명패와 탕감 기록이 모두 사라집니다. 처음부터 다시 시연할 수 있습니다.</p>
+    <h2 class="modal__title" id="confirm-title" data-i18n="confirm.title">시연 데이터를 초기화할까요?</h2>
+    <p class="modal__text" data-i18n="confirm.text">이 브라우저에 저장된 내 명패와 탕감 기록이 모두 사라집니다. 처음부터 다시 시연할 수 있습니다.</p>
     <div class="modal__actions">
-      <button class="btn btn--danger" type="button" id="confirm-yes">초기화</button>
-      <button class="btn btn--ghost" type="button" data-close="confirm">취소</button>
+      <button class="btn btn--danger" type="button" id="confirm-yes" data-i18n="confirm.yes">초기화</button>
+      <button class="btn btn--ghost" type="button" data-close="confirm" data-i18n="relief.cancel">취소</button>
     </div>
   </div>
 </div>
@@ -453,6 +476,7 @@
 <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 
 <script src="./assets/js/data.js" defer></script>
+<script src="./assets/js/i18n.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 </body>
 </html>

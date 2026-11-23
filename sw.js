@@ -1,11 +1,12 @@
-/* 노블레스 제로 · NOBLESSE ZERO — service worker
-   정적 앱 셸을 캐시해 오프라인에서도 화면이 열리도록 합니다. */
-var CACHE = 'nz-shell-v2';
+/* ZEROED — GLOBAL HONOR LEDGER · service worker
+   Caches the static app shell so the app opens offline. */
+var CACHE = 'zeroed-shell-v3';
 var ASSETS = [
   './',
   './index.html',
   './assets/css/styles.css',
   './assets/js/data.js',
+  './assets/js/i18n.js',
   './assets/js/app.js',
   './manifest.webmanifest',
   './assets/icons/favicon.svg',

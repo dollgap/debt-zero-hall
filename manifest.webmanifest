@@ -1,8 +1,8 @@
 {
-  "name": "노블레스 제로 · NOBLESSE ZERO",
-  "short_name": "노블레스 제로",
-  "description": "진짜 부의 완성은, 남의 빚을 지우는 품격 — 기업·자산가의 후원이 100% 탕감으로 이어지는 구조를 체험하는 컨셉 프로토타입.",
-  "lang": "ko",
+  "name": "ZEROED — Global Debt Relief Honor Club",
+  "short_name": "ZEROED",
+  "description": "Wealth is measured in zeros. Greatness is measured in the debts you zero — an interactive concept prototype of 100% pass-through debt relief and a global Honor Wall.",
+  "lang": "en",
   "dir": "ltr",
   "start_url": "./",
   "scope": "./",

@@ -1,20 +1,25 @@
 /* =========================================================
-   노블레스 제로 · NOBLESSE ZERO — prototype app
+   ZEROED — GLOBAL HONOR LEDGER · prototype app
    Vanilla JS · no build step · GitHub Pages friendly
-   모든 데이터는 예시이며 실제 결제/송금/개인정보 전송은 없습니다.
+   Bilingual (ko / en) · all data is demo only.
    ========================================================= */
 (function () {
   'use strict';
 
-  var DATA = window.NZ_DATA;
-  if (!DATA) return;
+  var DATA = window.ZEROED_DATA;
+  var I18N = window.ZEROED_I18N;
+  if (!DATA || !I18N) return;
 
   var BASE = DATA.BASE;
+  var RATE = DATA.USD_RATE || 1355;
   var SPONSORS = DATA.SPONSORS;
   var CASES = DATA.CASES;
   var CAT_LABEL = DATA.CATEGORY_LABEL;
 
-  var STORE_KEY = 'nz:v1';
+  var STORE_KEY = 'zeroed:v1';
+  var LANG_KEY = 'zeroed:lang';
+  var LANG = (window.__ZEROED_LANG__ === 'en') ? 'en' : 'ko';
+
   var state = loadState();
 
   var ui = {
@@ -25,8 +30,89 @@
     selectedAmount: 0,
     lastFocused: null,
     openModal: null,
+    lastCert: null,
+    lastComplete: null,
     shown: { amount: 0, households: 0, sponsors: 0 }
   };
+
+  /* ---------------- i18n ---------------- */
+  function t(key, vars) {
+    var table = I18N[LANG] || I18N.ko;
+    var s = table[key];
+    if (s === undefined) s = (I18N.ko[key] !== undefined ? I18N.ko[key] : key);
+    if (vars) {
+      Object.keys(vars).forEach(function (k) {
+        s = s.split('{' + k + '}').join(String(vars[k]));
+      });
+    }
+    return s;
+  }
+  function pick(obj, base) {
+    if (!obj) return '';
+    if (LANG === 'en' && obj[base + 'En']) return obj[base + 'En'];
+    return obj[base];
+  }
+  function applyStatic() {
+    document.documentElement.setAttribute('lang', LANG);
+    document.documentElement.setAttribute('data-lang', LANG);
+    document.title = t('meta.title');
+    setMeta('meta-desc', 'meta.description');
+    setMeta('og-title', 'meta.title');
+    setMeta('og-desc', 'meta.description');
+    setMeta('og-locale', 'meta.locale');
+    var list = document.querySelectorAll('[data-i18n]');
+    Array.prototype.forEach.call(list, function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    list = document.querySelectorAll('[data-i18n-html]');
+    Array.prototype.forEach.call(list, function (el) {
+      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    list = document.querySelectorAll('[data-i18n-aria]');
+    Array.prototype.forEach.call(list, function (el) {
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+    });
+    list = document.querySelectorAll('[data-i18n-placeholder]');
+    Array.prototype.forEach.call(list, function (el) {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-set-lang]'), function (btn) {
+      var on = btn.getAttribute('data-set-lang') === LANG;
+      btn.classList.toggle('is-active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+  function setMeta(id, key) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute('content', t(key));
+  }
+  function urlForLang(lang, keepHash) {
+    try {
+      var u = new URL(window.location.href);
+      u.searchParams.set('lang', lang);
+      return u.pathname + '?' + u.searchParams.toString() + (keepHash ? u.hash : '');
+    } catch (err) {
+      return null;
+    }
+  }
+  function setLang(lang, opts) {
+    if (lang !== 'ko' && lang !== 'en') return;
+    opts = opts || {};
+    LANG = lang;
+    window.__ZEROED_LANG__ = lang;
+    try { window.localStorage.setItem(LANG_KEY, lang); } catch (err) {}
+    if (opts.updateUrl !== false) {
+      var url = urlForLang(lang, true);
+      if (url) { try { history.replaceState(null, '', url); } catch (err) {} }
+    }
+    applyStatic();
+    renderAll(false);
+    renderSim();
+    refreshOpen();
+    if (opts.toast !== false) {
+      toast(lang === 'en' ? 'Language: English' : '언어: 한국어', 'ok');
+    }
+  }
 
   /* ---------------- utils ---------------- */
   function h(tag, cls, text) {
@@ -57,10 +143,32 @@
     }
     return n.toLocaleString('ko-KR') + '원';
   }
-  function fmtCount(n) { return Math.round(num(n)).toLocaleString('ko-KR'); }
+  function fmtUSD(valueKRW) {
+    var usd = Math.max(0, num(valueKRW)) / RATE;
+    if (usd >= 1000000000) return '$' + trimNum(usd / 1000000000) + 'B';
+    if (usd >= 1000000) return '$' + trimNum(usd / 1000000) + 'M';
+    if (usd >= 1000) return '$' + trimNum(usd / 1000) + 'K';
+    return '$' + Math.round(usd).toLocaleString('en-US');
+  }
+  function trimNum(v) {
+    var s;
+    if (v >= 100) s = v.toFixed(0);
+    else if (v >= 10) s = v.toFixed(1);
+    else s = v.toFixed(2);
+    if (s.indexOf('.') >= 0) s = s.replace(/\.0+$/, '').replace(/(\.\d)0$/, '$1');
+    return s;
+  }
+  function fmtMoney(v) { return LANG === 'en' ? fmtUSD(v) : fmtKRW(v); }
+  function fmtCount(n) {
+    return Math.round(num(n)).toLocaleString(LANG === 'en' ? 'en-US' : 'ko-KR');
+  }
   function fmtDate(iso) {
     var d = iso ? new Date(iso) : new Date();
     if (isNaN(d.getTime())) d = new Date();
+    if (LANG === 'en') {
+      var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
     var mm = String(d.getMonth() + 1).padStart(2, '0');
     var dd = String(d.getDate()).padStart(2, '0');
     return d.getFullYear() + '.' + mm + '.' + dd;
@@ -68,7 +176,8 @@
   function fmtDateTime(iso) {
     var d = iso ? new Date(iso) : new Date();
     if (isNaN(d.getTime())) d = new Date();
-    return fmtDate(iso) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    var time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    return fmtDate(iso) + ' ' + time;
   }
   function uid() {
     return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -89,7 +198,7 @@
           id: String(e.id || uid()),
           caseId: String(e.caseId),
           amount: Math.max(0, Math.round(Number(e.amount))),
-          nickname: String(e.nickname || '익명의 노블레스').slice(0, 20),
+          nickname: String(e.nickname || '').slice(0, 20),
           message: String(e.message || '').slice(0, 60),
           at: e.at || new Date().toISOString()
         };
@@ -107,7 +216,7 @@
     try {
       window.localStorage.setItem(STORE_KEY, JSON.stringify(state));
     } catch (err) {
-      /* 저장 공간이 없거나 시크릿 모드인 경우: 시연은 계속 진행 */
+      /* storage full or private mode: keep the demo running */
     }
   }
 
@@ -139,13 +248,16 @@
       sponsors: BASE.sponsors + (state.entries.length > 0 ? 1 : 0)
     };
   }
+  function myNickname(e) {
+    return (e && e.nickname) ? e.nickname : t('js.certDefaultName');
+  }
 
   function myPlates() {
     var groups = {};
     state.entries.forEach(function (e) {
-      var key = e.nickname || '익명의 노블레스';
+      var key = myNickname(e);
       if (!groups[key]) {
-        groups[key] = { id: 'me-' + key, type: 'person', mine: true, name: key, amount: 0, count: 0, joined: e.at, message: e.message, title: '내 체험 명패' };
+        groups[key] = { id: 'me-' + key, type: 'person', mine: true, name: key, amount: 0, count: 0, joined: e.at, message: e.message, title: '' };
       }
       groups[key].amount += num(e.amount);
       groups[key].count += 1;
@@ -154,7 +266,10 @@
         if (e.message) groups[key].message = e.message;
       }
     });
-    return Object.keys(groups).map(function (k) { return groups[k]; });
+    return Object.keys(groups).map(function (k) {
+      groups[k].title = t('js.myPlate');
+      return groups[k];
+    });
   }
 
   /* ---------------- animation ---------------- */
@@ -185,7 +300,7 @@
     var householdsEl = $('#stat-households');
     var sponsorsEl = $('#stat-sponsors');
 
-    animateNumber(amountEl, ui.shown.amount, m.amount, function (v) { return fmtKRW(v); });
+    animateNumber(amountEl, ui.shown.amount, m.amount, function (v) { return fmtMoney(v); });
     animateNumber(householdsEl, ui.shown.households, m.households, function (v) { return fmtCount(v); });
     animateNumber(sponsorsEl, ui.shown.sponsors, m.sponsors, function (v) { return fmtCount(v); });
 
@@ -199,26 +314,28 @@
     ui.shown = { amount: m.amount, households: m.households, sponsors: m.sponsors };
 
     var myTotalVal = userTotal();
-    $('#stat-amount-sub').textContent = myTotalVarText(myTotalVal);
+    $('#stat-amount-sub').textContent = myTotalVal > 0
+      ? t('impact.sub1Mine', { money: fmtMoney(myTotalVal) })
+      : t('impact.sub1');
     var doneCount = completedCaseIds().length;
     $('#stat-households-sub').textContent = doneCount > 0
-      ? '빚 0원 달성 · 내 체험 ' + doneCount + '가구 포함'
-      : '빚 0원 달성 가구';
+      ? t('impact.sub2Mine', { n: fmtCount(doneCount) })
+      : t('impact.sub2');
     $('#stat-sponsors-sub').textContent = state.entries.length > 0
-      ? '개인 · 기업 · 내 명패 포함'
-      : '개인 · 기업';
-  }
-  function myTotalVarText(v) {
-    return v > 0 ? '2026년 누적 · 내 체험 ' + fmtKRW(v) + ' 포함' : '2026년 누적 · 시연 데이터';
+      ? t('impact.sub3Mine')
+      : t('impact.sub3');
   }
 
   /* ---------------- honor wall ---------------- */
   function hallRows() {
     var rows = SPONSORS.map(function (s) {
       return {
-        id: s.id, type: s.type, name: s.name, title: s.title,
+        id: s.id, type: s.type,
+        name: pick(s, 'name'), title: pick(s, 'title'),
         amount: s.amount, count: s.count, joined: s.joined,
-        message: s.message, badges: [s.badge, s.badge2].filter(Boolean), mine: false
+        message: pick(s, 'message'),
+        badges: [pick(s, 'badge'), pick(s, 'badge2')].filter(Boolean),
+        mine: false
       };
     }).concat(myPlates());
     return rows;
@@ -231,9 +348,6 @@
     var map = {};
     sorted.forEach(function (r, i) { map[r.id] = i + 1; });
     return map;
-  }
-  function rowBadge(isNew) {
-    return isNew ? '신규 등재' : '';
   }
 
   function renderHall() {
@@ -259,8 +373,8 @@
     list.textContent = '';
     if (!visible.length) {
       var empty = h('div', 'empty');
-      empty.appendChild(h('strong', null, '아직 이 필터에 명패가 없습니다'));
-      empty.appendChild(document.createTextNode('탕감 보드에서 체험을 실행하면 내 명패가 이곳에 등재됩니다.'));
+      empty.appendChild(h('strong', null, t('js.emptyHallTitle')));
+      empty.appendChild(document.createTextNode(t('js.emptyHallText')));
       list.appendChild(empty);
     } else {
       visible.forEach(function (row) {
@@ -268,7 +382,7 @@
       });
     }
 
-    $('#hall-count').textContent = '명패 ' + fmtCount(rows.length) + '개';
+    $('#hall-count').textContent = t('js.hallCount', { n: fmtCount(rows.length) });
 
     var mineWrap = $('#hall-mine');
     var mineCard = $('#hall-mine-card');
@@ -287,36 +401,35 @@
     var isTop = rank <= 3 && !recentFirst;
     var card = h('button', 'plaque' + (isTop ? ' plaque--top' : '') + (row.mine ? ' plaque--mine' : '') + (pinned ? ' plaque--pinned' : ''));
     card.type = 'button';
-    card.setAttribute('aria-label', row.name + ' 명패 — 명예 인증서 보기');
+    card.setAttribute('aria-label', t('js.plaqueAria', { name: row.name }));
 
     var top = h('div', 'plaque__top');
     var rankWrap = h('span', 'rank');
     var medal = h('span', 'rank__medal' + (rank === 1 ? '' : rank === 2 ? ' rank__medal--silver' : rank === 3 ? ' rank__medal--bronze' : ' rank__medal--plain'), String(rank));
     rankWrap.appendChild(medal);
-    rankWrap.appendChild(document.createTextNode(isTop ? (rank === 1 ? 'GOLD' : rank === 2 ? 'SILVER' : 'BRONZE') : 'RANK'));
+    rankWrap.appendChild(document.createTextNode(isTop ? (rank === 1 ? 'GOLD' : rank === 2 ? 'SILVER' : 'BRONZE') : t('js.rank')));
     top.appendChild(rankWrap);
 
     var badges = h('span', 'plaque__badges');
-    if (row.mine) badges.appendChild(h('span', 'badge badge--gold', 'MY · 신규'));
+    if (row.mine) badges.appendChild(h('span', 'badge badge--gold', t('js.mine')));
     (row.badges || []).forEach(function (b) { badges.appendChild(h('span', 'badge', b)); });
     top.appendChild(badges);
     card.appendChild(top);
 
     var nameRow = h('p', 'plaque__name');
     nameRow.appendChild(document.createTextNode(row.name));
-    nameRow.appendChild(h('span', 'plaque__type', row.type === 'corp' ? '기업' : '개인'));
+    nameRow.appendChild(h('span', 'plaque__type', row.type === 'corp' ? t('js.corp') : t('js.person')));
     card.appendChild(nameRow);
     if (row.title) card.appendChild(h('p', 'plaque__title', row.title));
 
-    card.appendChild(h('p', 'plaque__amount', fmtKRW(row.amount)));
-    card.appendChild(h('p', 'plaque__meta', '누적 탕감 ' + fmtCount(row.count) + '건 · 등재 ' + fmtDate(row.joined)));
+    card.appendChild(h('p', 'plaque__amount', fmtMoney(row.amount)));
+    card.appendChild(h('p', 'plaque__meta', t('js.cases', { n: fmtCount(row.count), date: fmtDate(row.joined) })));
 
-    var msg = h('p', 'plaque__msg', row.message || '한마디 없이 조용히 품격을 남긴 후원입니다.');
+    var msg = h('p', 'plaque__msg', row.message || t('js.noMsg'));
     card.appendChild(msg);
 
     var open = h('span', 'plaque__open');
-    open.appendChild(document.createTextNode('명예 인증서 보기'));
-    open.appendChild(document.createTextNode(' →'));
+    open.appendChild(document.createTextNode(t('js.openCert')));
     card.appendChild(open);
 
     card.addEventListener('click', function () {
@@ -328,7 +441,7 @@
         message: row.message,
         date: row.joined,
         rank: rank,
-        serial: 'NZ-2026-' + pad4(rank) + '-' + String(row.id).replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase()
+        serial: 'ZRD-2026-' + pad4(rank) + '-' + String(row.id).replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase()
       });
     });
     return card;
@@ -348,15 +461,15 @@
 
     if (!visible.length) {
       var empty = h('div', 'empty');
-      empty.appendChild(h('strong', null, '해당 카테고리에 열린 사연이 없습니다'));
-      empty.appendChild(document.createTextNode('다른 카테고리를 선택해 보세요.'));
+      empty.appendChild(h('strong', null, t('js.emptyBoardTitle')));
+      empty.appendChild(document.createTextNode(t('js.emptyBoardText')));
       wrap.appendChild(empty);
     }
 
-    $('#board-count').textContent = '사연 ' + visible.length + '건';
+    $('#board-count').textContent = t('js.boardCount', { n: fmtCount(visible.length) });
     var remainingAll = CASES.reduce(function (a, c) { return a + caseRemaining(c); }, 0);
-    $('#board-remaining').textContent = fmtKRW(remainingAll);
-    $('#board-myTotal').textContent = fmtKRW(userTotal());
+    $('#board-remaining').textContent = fmtMoney(remainingAll);
+    $('#board-myTotal').textContent = fmtMoney(userTotal());
 
     renderLedger();
   }
@@ -371,29 +484,31 @@
     card.dataset.caseId = c.id;
 
     var head = h('div', 'case__head');
-    head.appendChild(h('span', 'tag tag--cat', CAT_LABEL[c.cat] || '사연'));
-    if (c.urgency === '긴급' && !done) head.appendChild(h('span', 'tag tag--urgent', '긴급'));
-    if (done) head.appendChild(h('span', 'tag tag--new', 'ZERO 달성'));
+    var cat = CAT_LABEL[c.cat];
+    head.appendChild(h('span', 'tag tag--cat', cat ? (cat[LANG] || cat.ko) : 'Case'));
+    if (c.urgency === 'urgent' && !done) head.appendChild(h('span', 'tag tag--urgent', t('js.urgent')));
+    if (done) head.appendChild(h('span', 'tag tag--new', t('js.zeroed')));
     card.appendChild(head);
 
-    card.appendChild(h('h3', 'case__title', c.title));
-    card.appendChild(h('p', 'case__story', c.story));
+    card.appendChild(h('h3', 'case__title', pick(c, 'title')));
+    card.appendChild(h('p', 'case__story', pick(c, 'story')));
 
     var org = h('p', 'case__org');
     org.appendChild(checkIcon());
-    org.appendChild(document.createTextNode(c.org));
+    org.appendChild(document.createTextNode(pick(c, 'org')));
     card.appendChild(org);
+    card.appendChild(h('p', 'case__household', pick(c, 'household')));
 
     if (done) {
       var stamp = h('div', 'stamp');
-      stamp.appendChild(h('small', null, 'NOBLESSE'));
-      stamp.appendChild(document.createTextNode('ZERO'));
+      stamp.appendChild(h('small', null, 'JUST'));
+      stamp.appendChild(document.createTextNode('ZEROED'));
       card.appendChild(stamp);
     }
 
     var prog = h('div', 'progress');
     var pTop = h('div', 'progress__top');
-    pTop.appendChild(h('span', null, done ? '100% 달성 · 탕감 완료' : '달성률'));
+    pTop.appendChild(h('span', null, done ? t('js.fundedDone') : t('js.funded')));
     pTop.appendChild(h('span', 'progress__pct', String(pct) + '%'));
     prog.appendChild(pTop);
 
@@ -402,32 +517,32 @@
     bar.setAttribute('aria-valuemin', '0');
     bar.setAttribute('aria-valuemax', '100');
     bar.setAttribute('aria-valuenow', String(pct));
-    bar.setAttribute('aria-label', c.title + ' 달성률');
+    bar.setAttribute('aria-label', t('js.progressAria', { title: pick(c, 'title') }));
     var fill = h('div', 'bar__fill');
     bar.appendChild(fill);
     prog.appendChild(bar);
 
     var dl = h('dl', 'amounts');
-    dl.appendChild(amountItem('목표', fmtKRW(c.target), false));
-    dl.appendChild(amountItem('모인 금액', fmtKRW(raised), false));
-    dl.appendChild(amountItem('남은 잔액', done ? '0원' : fmtKRW(remaining), true));
+    dl.appendChild(amountItem(t('js.goal'), fmtMoney(c.target), false));
+    dl.appendChild(amountItem(t('js.raised'), fmtMoney(raised), false));
+    dl.appendChild(amountItem(t('js.remaining'), done ? fmtMoney(0) : fmtMoney(remaining), true));
     prog.appendChild(dl);
     card.appendChild(prog);
 
     var cta = h('div', 'case__cta');
     if (done) {
       var doneActions = h('div', 'case__done-actions');
-      var certBtn = h('button', 'btn btn--primary', '명예 인증서 보기');
+      var certBtn = h('button', 'btn btn--primary', t('js.viewCert'));
       certBtn.type = 'button';
       certBtn.addEventListener('click', function () { openCaseCertificate(c); });
-      var hallBtn = h('button', 'btn btn--ghost', '명예의 전당');
+      var hallBtn = h('button', 'btn btn--ghost', t('js.honorWall'));
       hallBtn.type = 'button';
       hallBtn.addEventListener('click', function () { switchTab('hall'); });
       doneActions.appendChild(certBtn);
       doneActions.appendChild(hallBtn);
       cta.appendChild(doneActions);
     } else {
-      var btn = h('button', 'btn btn--primary', '대신 갚아주기');
+      var btn = h('button', 'btn btn--primary', t('js.zeroDebt'));
       btn.type = 'button';
       btn.dataset.openRelief = c.id;
       btn.addEventListener('click', function () { openRelief(c.id); });
@@ -476,10 +591,10 @@
       var c = caseById(e.caseId);
       var li = h('li');
       var left = h('span', 'l-title');
-      left.appendChild(document.createTextNode(c ? c.title : '삭제된 사연'));
-      left.appendChild(h('small', null, e.nickname + ' · ' + fmtDateTime(e.at) + (e.message ? ' · “' + e.message + '”' : '')));
+      left.appendChild(document.createTextNode(c ? pick(c, 'title') : t('js.deletedCase')));
+      left.appendChild(h('small', null, myNickname(e) + ' · ' + fmtDateTime(e.at) + (e.message ? ' · “' + e.message + '”' : '')));
       li.appendChild(left);
-      li.appendChild(h('span', 'l-amt', fmtKRW(e.amount)));
+      li.appendChild(h('span', 'l-amt', fmtMoney(e.amount)));
       list.appendChild(li);
     });
   }
@@ -489,10 +604,10 @@
   function switchTab(name, opts) {
     if (TABS.indexOf(name) < 0) name = 'hall';
     ui.activeTab = name;
-    TABS.forEach(function (t) {
-      var tab = $('#tab-' + t);
-      var panel = $('#panel-' + t);
-      var on = t === name;
+    TABS.forEach(function (tName) {
+      var tab = $('#tab-' + tName);
+      var panel = $('#panel-' + tName);
+      var on = tName === name;
       tab.classList.toggle('is-active', on);
       tab.setAttribute('aria-selected', on ? 'true' : 'false');
       tab.tabIndex = on ? 0 : -1;
@@ -500,13 +615,14 @@
       panel.hidden = !on;
     });
     try {
-      history.replaceState(null, '', '#' + name);
-    } catch (err) { /* file: 등에서 실패해도 무시 */ }
+      var url = window.location.pathname + window.location.search + '#' + name;
+      history.replaceState(null, '', url);
+    } catch (err) { /* file: ignores */ }
     if (opts && opts.scroll) {
-      var panel = $('#panel-' + name);
-      if (panel) {
+      var panelEl = $('#panel-' + name);
+      if (panelEl) {
         var offset = window.innerWidth <= 760 ? 74 : 118;
-        var y = panel.getBoundingClientRect().top + window.pageYOffset - offset;
+        var y = panelEl.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
       }
     }
@@ -573,6 +689,11 @@
       closeModal(key === 'cert' ? 'cert-modal' : key === 'relief' ? 'relief-modal' : 'confirm-modal');
       return;
     }
+    var langBtn = ev.target.closest('[data-set-lang]');
+    if (langBtn) {
+      setLang(langBtn.getAttribute('data-set-lang'));
+      return;
+    }
     var goto = ev.target.closest('[data-goto]');
     if (goto) {
       switchTab(goto.getAttribute('data-goto'), { scroll: true });
@@ -585,12 +706,12 @@
     if (!c) return;
     var remaining = caseRemaining(c);
     if (remaining <= 0) {
-      toast('이미 탕감이 완료된 사연입니다.');
+      toast(t('js.removeTitle'));
       return;
     }
     ui.activeCase = c;
-    $('#relief-case').textContent = c.title;
-    $('#relief-remain').textContent = fmtKRW(remaining);
+    $('#relief-case').textContent = pick(c, 'title');
+    $('#relief-remain').textContent = fmtMoney(remaining);
 
     var nick = $('#relief-nickname');
     nick.value = state.nickname || '';
@@ -602,14 +723,29 @@
     openModal('relief-modal');
   }
 
+  function presetsFor(remaining) {
+    if (LANG === 'en') {
+      return [
+        { value: Math.round(150 * RATE), label: t('js.amount1') },
+        { value: Math.round(500 * RATE), label: t('js.amount2') },
+        { value: Math.round(1000 * RATE), label: t('js.amount3') }
+      ];
+    }
+    return [
+      { value: 100000, label: t('js.amount1') },
+      { value: 500000, label: t('js.amount2') },
+      { value: 1000000, label: t('js.amount3') }
+    ];
+  }
+  function defaultAmount(remaining) {
+    var third = presetsFor(remaining)[2].value;
+    return remaining <= third * 3 ? remaining : third;
+  }
+
   function buildAmounts(remaining) {
     var grid = $('#amount-grid');
     grid.textContent = '';
-    var presets = [
-      { value: 100000, label: '10만원' },
-      { value: 500000, label: '50만원' },
-      { value: 1000000, label: '100만원' }
-    ];
+    var presets = presetsFor(remaining);
     presets.forEach(function (p) {
       var b = h('button', 'amount-btn', p.label);
       b.type = 'button';
@@ -617,20 +753,19 @@
       b.setAttribute('aria-pressed', 'false');
       if (p.value > remaining) {
         b.disabled = true;
-        b.title = '남은 잔액보다 큽니다';
+        b.title = t('js.tooBig');
       }
       b.addEventListener('click', function () { selectAmount(p.value); });
       grid.appendChild(b);
     });
-    var all = h('button', 'amount-btn amount-btn--all', '잔액 전액 탕감 · ' + fmtKRW(remaining));
+    var all = h('button', 'amount-btn amount-btn--all', t('js.amountAll', { money: fmtMoney(remaining) }));
     all.type = 'button';
     all.dataset.amount = String(remaining);
     all.setAttribute('aria-pressed', 'false');
     all.addEventListener('click', function () { selectAmount(remaining); });
     grid.appendChild(all);
 
-    // 기본값: 남은 잔액이 300만원 이하면 전액 탕감, 그보다 크면 100만원
-    ui.selectedAmount = remaining <= 3000000 ? remaining : 1000000;
+    ui.selectedAmount = defaultAmount(remaining);
     highlightAmount();
   }
 
@@ -652,11 +787,11 @@
     var remaining = caseRemaining(c);
     var amount = Math.min(ui.selectedAmount, remaining);
     if (!amount || amount <= 0) {
-      toast('탕감할 금액을 선택해 주세요.');
+      toast(t('js.pickAmount'));
       return;
     }
     var nickInput = $('#relief-nickname');
-    var nickname = (nickInput.value || '').trim().slice(0, 20) || '익명의 노블레스';
+    var nickname = (nickInput.value || '').trim().slice(0, 20) || t('js.certDefaultName');
     var msgInput = $('#relief-message');
     var message = (msgInput.value || '').trim().slice(0, 60);
 
@@ -679,7 +814,7 @@
     var plate = myPlates().filter(function (p) { return p.name === nickname; })[0];
     var rank = plate ? rankMap(hallRows())[plate.id] : null;
 
-    toast(nickname + ' 명패가 아너스 명예의 전당에 등재되었습니다.', 'ok');
+    toast(t('js.plateToast', { name: nickname }), 'ok');
 
     if (done) {
       window.setTimeout(function () {
@@ -689,8 +824,8 @@
   }
 
   function showComplete(c, amount, message, rank) {
-    $('#complete-case').textContent = c.title + ' · ' + fmtKRW(amount) + ' 탕감';
-    $('#complete-msg').textContent = message || '이 사연은 이제 빚 0원이 되었습니다.';
+    ui.lastComplete = { caseId: c.id, amount: amount, message: message, rank: rank };
+    paintComplete();
     var overlay = $('#complete-overlay');
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -705,12 +840,21 @@
       document.body.style.overflow = '';
     };
   }
+  function paintComplete() {
+    var lc = ui.lastComplete;
+    if (!lc) return;
+    var c = caseById(lc.caseId);
+    $('#complete-case').textContent = c
+      ? t('js.completeAmount', { title: pick(c, 'title'), money: fmtMoney(lc.amount) })
+      : '';
+    $('#complete-msg').textContent = lc.message || t('js.completeMsg');
+  }
 
   /* ---------------- certificate ---------------- */
   function openCaseCertificate(c, rankHint) {
     var entries = entriesFor(c.id);
     var mine = entries.slice().sort(function (a, b) { return new Date(b.at) - new Date(a.at); })[0];
-    var nickname = mine ? mine.nickname : '익명의 노블레스';
+    var nickname = mine ? myNickname(mine) : t('js.certDefaultName');
     var amount = sumOf(entries);
     var plate = myPlates().filter(function (p) { return p.name === nickname; })[0];
     var rank = rankHint || (plate ? rankMap(hallRows())[plate.id] : null);
@@ -722,34 +866,45 @@
       message: mine ? mine.message : '',
       date: mine ? mine.at : new Date().toISOString(),
       rank: rank,
-      serial: 'NZ-2026-' + pad4(rank || 0) + '-' + String(c.id).toUpperCase()
-    }, c.title);
+      serial: 'ZRD-2026-' + pad4(rank || 0) + '-' + String(c.id).toUpperCase()
+    }, c.id);
   }
 
-  function openCertificate(data, caseTitle) {
-    $('#cert-name').textContent = data.name;
-    $('#cert-amount').textContent = fmtKRW(data.amount) + ' 대신 탕감';
-    $('#cert-msg').textContent = data.message ? '“' + data.message + '”' : '';
-    $('#cert-rank').textContent = data.rank ? '명예의 전당 ' + data.rank + '위' : '명예의 전당';
-    $('#cert-count').textContent = fmtCount(data.count) + '건';
-    $('#cert-date').textContent = fmtDate(data.date);
-    $('#cert-serial').textContent = data.serial;
-    $('#cert-title').textContent = caseTitle ? '탕감 명예 인증서' : '명예 인증서';
-
-    var shareBtn = $('#cert-share');
-    shareBtn.onclick = function () { shareCert(data); };
+  function openCertificate(data, caseId) {
+    ui.lastCert = { data: data, caseId: caseId || null };
+    paintCertificate();
     openModal('cert-modal');
   }
 
+  function paintCertificate() {
+    var lc = ui.lastCert;
+    if (!lc) return;
+    var data = lc.data;
+    var c = lc.caseId ? caseById(lc.caseId) : null;
+    $('#cert-name').textContent = data.name;
+    $('#cert-amount').textContent = t('js.certAmount', { money: fmtMoney(data.amount) });
+    $('#cert-msg').textContent = data.message ? '“' + data.message + '”' : '';
+    $('#cert-rank').textContent = data.rank ? t('js.certRank', { n: data.rank }) : t('js.certRankNone');
+    $('#cert-count').textContent = t('js.certCount', { n: fmtCount(data.count) });
+    $('#cert-date').textContent = fmtDate(data.date);
+    $('#cert-serial').textContent = data.serial;
+    $('#cert-title').textContent = c ? t('cert.titleCase') : t('cert.title');
+
+    var shareBtn = $('#cert-share');
+    shareBtn.onclick = function () { shareCert(data); };
+  }
+
   function shareCert(data) {
-    var text = '[노블레스 제로] ' + data.name + ' 님이 ' + fmtKRW(data.amount) + '을 대신 갚아 ' +
-      fmtCount(data.count) + '건의 빚을 지웠습니다. (시연용 인증서)';
+    var isDefaultName = !data.name || data.name === t('js.certDefaultName') ||
+      data.name === I18N.ko['js.certDefaultName'] || data.name === I18N.en['js.certDefaultName'];
+    var key = isDefaultName ? 'js.shareText' : 'js.shareTextNamed';
+    var text = t(key, { name: data.name, money: fmtMoney(data.amount) });
     var url = window.location.href.split('#')[0];
     var payload = text + ' ' + url;
 
     if (navigator.share) {
-      navigator.share({ title: '노블레스 제로 · 명예 인증서', text: text, url: url }).then(function () {
-        /* 공유 완료 */
+      navigator.share({ title: t('js.shareTitle'), text: text, url: url }).then(function () {
+        /* shared */
       }).catch(function () {
         copyText(payload);
       });
@@ -761,12 +916,15 @@
   function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () {
-        toast('공유 문구를 복사했습니다.', 'ok');
+        toast(t('js.copied'), 'ok');
       }).catch(function () {
-        toast('복사가 차단되었습니다. 화면의 문구를 직접 복사해 주세요.');
+        legacyCopy(text);
       });
       return;
     }
+    legacyCopy(text);
+  }
+  function legacyCopy(text) {
     try {
       var ta = document.createElement('textarea');
       ta.value = text;
@@ -777,68 +935,93 @@
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('공유 문구를 복사했습니다.', 'ok');
+      toast(t('js.copied'), 'ok');
     } catch (err) {
-      toast('복사가 차단되었습니다. 화면의 문구를 직접 복사해 주세요.');
+      toast(t('js.copyBlocked'));
     }
   }
 
   /* ---------------- toast ---------------- */
   function toast(message, kind) {
     var box = $('#toasts');
-    var t = h('div', 'toast' + (kind === 'ok' ? ' toast--ok' : ''), message);
-    box.appendChild(t);
+    var el = h('div', 'toast' + (kind === 'ok' ? ' toast--ok' : ''), message);
+    box.appendChild(el);
     window.setTimeout(function () {
-      t.classList.add('is-out');
-      window.setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 320);
+      el.classList.add('is-out');
+      window.setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 320);
     }, 2600);
   }
 
   /* ---------------- simulator ---------------- */
   var SIM_COST = 90000000;
+  var simReady = false;
   function initSim() {
     var campEl = $('#sim-campaigns');
     var budgetEl = $('#sim-budget');
     var subsEl = $('#sim-subs');
     if (!campEl || !budgetEl || !subsEl) return;
 
-    function updateTrack(el) {
-      var min = Number(el.min), max = Number(el.max), v = Number(el.value);
-      var pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
-      el.style.setProperty('--fill', pct + '%');
-    }
-    function render() {
-      var camp = Number(campEl.value);
-      var budget = Number(budgetEl.value);
-      var subs = Number(subsEl.value);
-
-      var relief = camp * budget;
-      var fee = relief * 0.15;
-      var saas = subs * 2500000;
-      var traffic = camp * 1800000;
-      var revenue = fee + saas + traffic;
-      var profit = revenue - SIM_COST;
-      var ratio = relief > 0 ? (revenue / relief) * 100 : 0;
-
-      $('#sim-campaigns-out').textContent = camp + '건';
-      $('#sim-budget-out').textContent = fmtKRW(budget);
-      $('#sim-subs-out').textContent = subs + '곳';
-      $('#sim-relief').textContent = fmtKRW(relief);
-      $('#sim-fee').textContent = fmtKRW(fee);
-      $('#sim-saas').textContent = fmtKRW(saas);
-      $('#sim-traffic').textContent = fmtKRW(traffic);
-      $('#sim-revenue').textContent = fmtKRW(revenue);
-      $('#sim-year').textContent = fmtKRW(revenue * 12);
-      $('#sim-profit').textContent = (profit >= 0 ? '' : '-') + fmtKRW(Math.abs(profit));
-      $('#sim-ratio').textContent = ratio.toFixed(1) + '%';
-
-      [campEl, budgetEl, subsEl].forEach(updateTrack);
-    }
     [campEl, budgetEl, subsEl].forEach(function (el) {
-      el.addEventListener('input', render);
-      el.addEventListener('change', render);
+      el.addEventListener('input', renderSim);
+      el.addEventListener('change', renderSim);
     });
-    render();
+    simReady = true;
+    renderSim();
+  }
+  function updateTrack(el) {
+    var min = Number(el.min), max = Number(el.max), v = Number(el.value);
+    var pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
+    el.style.setProperty('--fill', pct + '%');
+  }
+  function renderSim() {
+    if (!simReady) return;
+    var campEl = $('#sim-campaigns');
+    var budgetEl = $('#sim-budget');
+    var subsEl = $('#sim-subs');
+    var camp = Number(campEl.value);
+    var budget = Number(budgetEl.value);
+    var subs = Number(subsEl.value);
+
+    var relief = camp * budget;
+    var fee = relief * 0.15;
+    var saas = subs * 2500000;
+    var traffic = camp * 1800000;
+    var revenue = fee + saas + traffic;
+    var profit = revenue - SIM_COST;
+    var ratio = relief > 0 ? (revenue / relief) * 100 : 0;
+
+    $('#sim-campaigns-out').textContent = t('js.simCamp', { n: fmtCount(camp) });
+    $('#sim-budget-out').textContent = fmtMoney(budget);
+    $('#sim-subs-out').textContent = t('js.simSubs', { n: fmtCount(subs) });
+    $('#sim-relief').textContent = fmtMoney(relief);
+    $('#sim-fee').textContent = fmtMoney(fee);
+    $('#sim-saas').textContent = fmtMoney(saas);
+    $('#sim-traffic').textContent = fmtMoney(traffic);
+    $('#sim-revenue').textContent = fmtMoney(revenue);
+    $('#sim-year').textContent = fmtMoney(revenue * 12);
+    $('#sim-cost').textContent = fmtMoney(SIM_COST);
+    $('#sim-profit').textContent = (profit >= 0 ? '' : '-') + fmtMoney(Math.abs(profit));
+    $('#sim-ratio').textContent = ratio.toFixed(1) + '%';
+
+    [campEl, budgetEl, subsEl].forEach(updateTrack);
+  }
+
+  /* ---------------- language switch: refresh open views ---------------- */
+  function refreshOpen() {
+    if (!$('#relief-modal').hidden && ui.activeCase) {
+      var c = ui.activeCase;
+      var remaining = caseRemaining(c);
+      $('#relief-case').textContent = pick(c, 'title');
+      $('#relief-remain').textContent = fmtMoney(remaining);
+      var keep = ui.selectedAmount;
+      buildAmounts(remaining);
+      if (keep > 0 && keep <= remaining) {
+        ui.selectedAmount = keep;
+        highlightAmount();
+      }
+    }
+    if (!$('#cert-modal').hidden) paintCertificate();
+    if (!$('#complete-overlay').hidden) paintComplete();
   }
 
   /* ---------------- reset ---------------- */
@@ -854,7 +1037,7 @@
         try { window.localStorage.removeItem(STORE_KEY); } catch (err) {}
         closeModal('confirm-modal');
         renderAll(false);
-        toast('시연 데이터를 초기화했습니다.');
+        toast(t('js.resetDone'));
       });
     }
   }
@@ -928,12 +1111,14 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    applyStatic();
     initTabs();
     initMessages();
     initSim();
     initReset();
     ui.shown = { amount: BASE.totalRelief, households: BASE.households, sponsors: BASE.sponsors };
     renderAll(false);
+    document.documentElement.classList.remove('i18n-boot');
     registerSW();
   });
 
@@ -942,7 +1127,7 @@
     if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('./sw.js').catch(function () {
-        /* 등록 실패는 기능에 영향을 주지 않습니다 */
+        /* registration failure does not affect the app */
       });
     });
   }
