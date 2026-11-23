@@ -1,0 +1,21 @@
+{
+  "name": "채움의 전당 · DEBT ZERO HALL",
+  "short_name": "채움의 전당",
+  "description": "부채 탕감 명예의 전당 — 기업·개인 후원이 100% 탕감으로 이어지는 구조를 체험하는 컨셉 프로토타입.",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0a090c",
+  "theme_color": "#0a090c",
+  "categories": ["finance", "social", "lifestyle"],
+  "icons": [
+    { "src": "./assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
