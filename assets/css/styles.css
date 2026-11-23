@@ -746,6 +746,8 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   word-break: keep-all;
 }
+.case.is-done .case__title,
+.case.is-done .case__story { padding-right: 82px; }
 .case__org {
   display: inline-flex;
   align-items: center;
@@ -1576,6 +1578,10 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   .cert { padding: 26px 16px 20px; }
   .cert__seal { width: 52px; height: 52px; font-size: 9.5px; }
   .complete__stamp { width: 116px; height: 116px; font-size: 18px; }
+  .stamp { width: 76px; height: 76px; font-size: 8.5px; top: 12px; right: 10px; }
+  .stamp span { font-size: 12px; }
+  .case.is-done .case__title,
+  .case.is-done .case__story { padding-right: 70px; }
   .complete h2 { font-size: 22px; }
   .flow__steps { grid-template-columns: 1fr; gap: 8px; }
   .flow__steps li:not(:last-child)::after {
