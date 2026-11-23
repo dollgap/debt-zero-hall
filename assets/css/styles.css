@@ -1617,6 +1617,10 @@ html[data-lang="en"] .hero__sub { font-weight: 500; }
 html[data-lang="en"] .hero__lead { word-break: normal; }
 html[data-lang="en"] .cert__title { font-size: 20px; letter-spacing: 0.08em; }
 html[data-lang="en"] .cert__name { font-size: 22px; letter-spacing: 0; }
+@media (max-width: 760px) {
+  html[data-lang="en"] .cert__title { font-size: 16.5px; letter-spacing: 0.05em; }
+  html[data-lang="en"] .cert__name { font-size: 20px; }
+}
 html[data-lang="en"] .cert__to { letter-spacing: 0.04em; word-spacing: 0.04em; }
 html[data-lang="en"] .cert__meta dt { letter-spacing: 0.08em; }
 html[data-lang="en"] .plaque__name { letter-spacing: 0; }
@@ -1678,8 +1682,8 @@ html[data-lang="en"] .tab { letter-spacing: 0; }
   .modal__dialog { padding: 22px 18px; border-radius: 20px; margin-top: 12px; }
   .cert { padding: 26px 16px 20px; }
   .cert__seal { width: 52px; height: 52px; font-size: 9.5px; }
-  .complete__stamp { width: 116px; height: 116px; font-size: 18px; }
-  .complete__stamp small { font-size: 8px; letter-spacing: 0.26em; }
+  .complete__stamp { width: 116px; height: 116px; font-size: 20px; }
+  .complete__stamp small { font-size: 9px; letter-spacing: 0.26em; }
   .stamp { width: 76px; height: 76px; font-size: 12px; top: 12px; right: 10px; }
   .stamp small { font-size: 7px; letter-spacing: 0.14em; }
   .case.is-done .case__title,

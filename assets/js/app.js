@@ -885,7 +885,7 @@
     $('#cert-amount').textContent = t('js.certAmount', { money: fmtMoney(data.amount) });
     $('#cert-msg').textContent = data.message ? '“' + data.message + '”' : '';
     $('#cert-rank').textContent = data.rank ? t('js.certRank', { n: data.rank }) : t('js.certRankNone');
-    $('#cert-count').textContent = t('js.certCount', { n: fmtCount(data.count) });
+    $('#cert-count').textContent = t(data.count === 1 ? 'js.certCountOne' : 'js.certCount', { n: fmtCount(data.count) });
     $('#cert-date').textContent = fmtDate(data.date);
     $('#cert-serial').textContent = data.serial;
     $('#cert-title').textContent = c ? t('cert.titleCase') : t('cert.title');
