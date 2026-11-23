@@ -185,7 +185,7 @@
       'complete.close': '계속 둘러보기',
 
       'confirm.title': '시연 데이터를 초기화할까요?',
-      'confirm.text': '이 브라우저에 저장된 내 명패와 탕감 기록이 모두 사라집니다. 처음부터 다시 시연할 수 있습니다.',
+      'confirm.text': '이 브라우저에 저장된 내 명패와 탕감 기록, 커뮤니티에 남긴 글·댓글·경의가 모두 사라집니다. 처음부터 다시 시연할 수 있습니다.',
       'confirm.yes': '초기화',
 
       'js.hallCount': '명패 {n}개',
@@ -479,7 +479,7 @@
       'complete.close': 'Keep exploring',
 
       'confirm.title': 'Reset demo data?',
-      'confirm.text': 'Your plaque and relief history in this browser will be erased. You can start the demo over.',
+      'confirm.text': 'Your plaque, relief history and everything you left in the community — posts, comments and respect — will be erased from this browser. You can start the demo over.',
       'confirm.yes': 'Reset',
 
       'js.hallCount': '{n} plaques',
