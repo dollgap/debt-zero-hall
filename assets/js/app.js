@@ -1,12 +1,12 @@
 /* =========================================================
-   채움의 전당 · DEBT ZERO HALL — prototype app
+   노블레스 제로 · NOBLESSE ZERO — prototype app
    Vanilla JS · no build step · GitHub Pages friendly
    모든 데이터는 예시이며 실제 결제/송금/개인정보 전송은 없습니다.
    ========================================================= */
 (function () {
   'use strict';
 
-  var DATA = window.DZH_DATA;
+  var DATA = window.NZ_DATA;
   if (!DATA) return;
 
   var BASE = DATA.BASE;
@@ -14,7 +14,7 @@
   var CASES = DATA.CASES;
   var CAT_LABEL = DATA.CATEGORY_LABEL;
 
-  var STORE_KEY = 'dzh:v1';
+  var STORE_KEY = 'nz:v1';
   var state = loadState();
 
   var ui = {
@@ -89,7 +89,7 @@
           id: String(e.id || uid()),
           caseId: String(e.caseId),
           amount: Math.max(0, Math.round(Number(e.amount))),
-          nickname: String(e.nickname || '익명의 히어로').slice(0, 20),
+          nickname: String(e.nickname || '익명의 노블레스').slice(0, 20),
           message: String(e.message || '').slice(0, 60),
           at: e.at || new Date().toISOString()
         };
@@ -143,7 +143,7 @@
   function myPlates() {
     var groups = {};
     state.entries.forEach(function (e) {
-      var key = e.nickname || '익명의 히어로';
+      var key = e.nickname || '익명의 노블레스';
       if (!groups[key]) {
         groups[key] = { id: 'me-' + key, type: 'person', mine: true, name: key, amount: 0, count: 0, joined: e.at, message: e.message, title: '내 체험 명패' };
       }
@@ -202,8 +202,8 @@
     $('#stat-amount-sub').textContent = myTotalVarText(myTotalVal);
     var doneCount = completedCaseIds().length;
     $('#stat-households-sub').textContent = doneCount > 0
-      ? 'DEBT ZERO 달성 · 내 체험 ' + doneCount + '가구 포함'
-      : 'DEBT ZERO 달성 가구';
+      ? '빚 0원 달성 · 내 체험 ' + doneCount + '가구 포함'
+      : '빚 0원 달성 가구';
     $('#stat-sponsors-sub').textContent = state.entries.length > 0
       ? '개인 · 기업 · 내 명패 포함'
       : '개인 · 기업';
@@ -311,7 +311,7 @@
     card.appendChild(h('p', 'plaque__amount', fmtKRW(row.amount)));
     card.appendChild(h('p', 'plaque__meta', '누적 탕감 ' + fmtCount(row.count) + '건 · 등재 ' + fmtDate(row.joined)));
 
-    var msg = h('p', 'plaque__msg', row.message || '한마디 없이 조용히 채운 후원입니다.');
+    var msg = h('p', 'plaque__msg', row.message || '한마디 없이 조용히 품격을 남긴 후원입니다.');
     card.appendChild(msg);
 
     var open = h('span', 'plaque__open');
@@ -328,7 +328,7 @@
         message: row.message,
         date: row.joined,
         rank: rank,
-        serial: 'DZH-2026-' + pad4(rank) + '-' + String(row.id).replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase()
+        serial: 'NZ-2026-' + pad4(rank) + '-' + String(row.id).replace(/[^a-zA-Z0-9]/g, '').slice(-3).toUpperCase()
       });
     });
     return card;
@@ -373,7 +373,7 @@
     var head = h('div', 'case__head');
     head.appendChild(h('span', 'tag tag--cat', CAT_LABEL[c.cat] || '사연'));
     if (c.urgency === '긴급' && !done) head.appendChild(h('span', 'tag tag--urgent', '긴급'));
-    if (done) head.appendChild(h('span', 'tag tag--new', 'DEBT ZERO 완료'));
+    if (done) head.appendChild(h('span', 'tag tag--new', 'ZERO 달성'));
     card.appendChild(head);
 
     card.appendChild(h('h3', 'case__title', c.title));
@@ -386,7 +386,7 @@
 
     if (done) {
       var stamp = h('div', 'stamp');
-      stamp.appendChild(h('span', null, 'DEBT'));
+      stamp.appendChild(h('small', null, 'NOBLESSE'));
       stamp.appendChild(document.createTextNode('ZERO'));
       card.appendChild(stamp);
     }
@@ -656,7 +656,7 @@
       return;
     }
     var nickInput = $('#relief-nickname');
-    var nickname = (nickInput.value || '').trim().slice(0, 20) || '익명의 히어로';
+    var nickname = (nickInput.value || '').trim().slice(0, 20) || '익명의 노블레스';
     var msgInput = $('#relief-message');
     var message = (msgInput.value || '').trim().slice(0, 60);
 
@@ -679,7 +679,7 @@
     var plate = myPlates().filter(function (p) { return p.name === nickname; })[0];
     var rank = plate ? rankMap(hallRows())[plate.id] : null;
 
-    toast(nickname + ' 님의 명패가 명예의 전당에 등재되었습니다.', 'ok');
+    toast(nickname + ' 명패가 아너스 명예의 전당에 등재되었습니다.', 'ok');
 
     if (done) {
       window.setTimeout(function () {
@@ -710,7 +710,7 @@
   function openCaseCertificate(c, rankHint) {
     var entries = entriesFor(c.id);
     var mine = entries.slice().sort(function (a, b) { return new Date(b.at) - new Date(a.at); })[0];
-    var nickname = mine ? mine.nickname : '익명의 히어로';
+    var nickname = mine ? mine.nickname : '익명의 노블레스';
     var amount = sumOf(entries);
     var plate = myPlates().filter(function (p) { return p.name === nickname; })[0];
     var rank = rankHint || (plate ? rankMap(hallRows())[plate.id] : null);
@@ -722,7 +722,7 @@
       message: mine ? mine.message : '',
       date: mine ? mine.at : new Date().toISOString(),
       rank: rank,
-      serial: 'DZH-2026-' + pad4(rank || 0) + '-' + String(c.id).toUpperCase()
+      serial: 'NZ-2026-' + pad4(rank || 0) + '-' + String(c.id).toUpperCase()
     }, c.title);
   }
 
@@ -742,13 +742,13 @@
   }
 
   function shareCert(data) {
-    var text = '[채움의 전당] ' + data.name + ' 님이 ' + fmtKRW(data.amount) + '을 대신 갚아 ' +
+    var text = '[노블레스 제로] ' + data.name + ' 님이 ' + fmtKRW(data.amount) + '을 대신 갚아 ' +
       fmtCount(data.count) + '건의 빚을 지웠습니다. (시연용 인증서)';
     var url = window.location.href.split('#')[0];
     var payload = text + ' ' + url;
 
     if (navigator.share) {
-      navigator.share({ title: '채움의 전당 · 명예 인증서', text: text, url: url }).then(function () {
+      navigator.share({ title: '노블레스 제로 · 명예 인증서', text: text, url: url }).then(function () {
         /* 공유 완료 */
       }).catch(function () {
         copyText(payload);

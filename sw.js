@@ -1,6 +1,6 @@
-/* 채움의 전당 · DEBT ZERO HALL — service worker
+/* 노블레스 제로 · NOBLESSE ZERO — service worker
    정적 앱 셸을 캐시해 오프라인에서도 화면이 열리도록 합니다. */
-var CACHE = 'dzh-shell-v1';
+var CACHE = 'nz-shell-v2';
 var ASSETS = [
   './',
   './index.html',

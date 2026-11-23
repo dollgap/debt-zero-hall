@@ -1,5 +1,5 @@
 /* =========================================================
-   채움의 전당 · DEBT ZERO HALL
+   노블레스 제로 · NOBLESSE ZERO
    prototype stylesheet — dark marble & brass
    ========================================================= */
 
@@ -848,7 +848,7 @@ a:hover { text-decoration: underline; }
   display: grid;
   place-items: center;
   text-align: center;
-  font-size: 9.5px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.08em;
   line-height: 1.25;
@@ -858,7 +858,7 @@ a:hover { text-decoration: underline; }
   pointer-events: none;
   z-index: 2;
 }
-.stamp span { display: block; font-size: 14px; letter-spacing: 0.1em; }
+.stamp small { display: block; font-size: 8.5px; letter-spacing: 0.16em; opacity: 0.85; }
 
 /* ---------------- ledger ---------------- */
 .ledger {
@@ -1057,7 +1057,7 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
 .result__note { margin: 12px 0 0; font-size: 10.5px; line-height: 1.6; color: var(--muted-2); }
 
 .flow, .compare, .pitch { margin-top: 34px; }
-.flow h3, .compare h3, .pitch h3 {
+.flow h3, .compare h3, .reasons h3, .pitch h3 {
   margin: 0 0 16px;
   font-size: 18px;
   font-weight: 800;
@@ -1117,6 +1117,24 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   line-height: 1.65;
 }
 .flow__note strong { color: var(--ivory); }
+
+.reasons { margin-top: 34px; }
+.reasons__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.reason {
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid var(--line-soft);
+  background: linear-gradient(160deg, rgba(201, 163, 73, 0.09), rgba(247, 242, 230, 0.02) 70%);
+}
+.reason__label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.reason p:last-child { margin: 8px 0 0; font-size: 12.4px; line-height: 1.65; color: var(--muted); }
 
 .compare__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .compare__card {
@@ -1477,6 +1495,7 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   box-shadow: 0 0 0 6px rgba(79, 191, 139, 0.12), 0 0 50px rgba(79, 191, 139, 0.35);
   animation: stampIn 0.55s cubic-bezier(0.22, 1.4, 0.4, 1);
 }
+.complete__stamp small { display: block; font-size: 10px; letter-spacing: 0.3em; opacity: 0.85; }
 @keyframes stampIn {
   0% { transform: rotate(-11deg) scale(2.1); opacity: 0; }
   60% { opacity: 1; }
@@ -1538,7 +1557,7 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   .demo-banner { font-size: 10.5px; padding: 7px 12px; gap: 6px; }
   .topbar__meta .chip--ghost { display: none; }
   .hero { padding-top: 38px; }
-  .eyebrow { font-size: 9px; letter-spacing: 0.2em; }
+  .eyebrow { font-size: 8.5px; letter-spacing: 0.18em; }
   .hero__arch { height: 440px; border-radius: 260px 260px 18px 18px; }
   .impact { padding: 16px 14px 18px; border-radius: 20px; margin-top: 32px; }
   .impact__grid { grid-template-columns: 1fr 1fr; gap: 12px 0; }
@@ -1570,6 +1589,7 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   .chip--filter { padding: 8px 12px; font-size: 12px; }
   .wall, .cases { grid-template-columns: 1fr; }
   .compare__grid { grid-template-columns: 1fr; }
+  .reasons__grid { grid-template-columns: 1fr; }
   .footer__inner { grid-template-columns: 1fr; gap: 18px; }
   .board-top { flex-direction: column; align-items: flex-start; gap: 4px; }
   .board-summary { gap: 16px; }
@@ -1578,8 +1598,9 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   .cert { padding: 26px 16px 20px; }
   .cert__seal { width: 52px; height: 52px; font-size: 9.5px; }
   .complete__stamp { width: 116px; height: 116px; font-size: 18px; }
-  .stamp { width: 76px; height: 76px; font-size: 8.5px; top: 12px; right: 10px; }
-  .stamp span { font-size: 12px; }
+  .complete__stamp small { font-size: 8px; letter-spacing: 0.26em; }
+  .stamp { width: 76px; height: 76px; font-size: 12px; top: 12px; right: 10px; }
+  .stamp small { font-size: 7px; letter-spacing: 0.14em; }
   .case.is-done .case__title,
   .case.is-done .case__story { padding-right: 70px; }
   .complete h2 { font-size: 22px; }
