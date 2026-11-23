@@ -1384,6 +1384,7 @@ input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; }
   font-size: 9.5px;
   color: #7d6a48;
   letter-spacing: 0.02em;
+  word-spacing: 0.16em;
 }
 .cert__name {
   margin: 6px 0 0;
