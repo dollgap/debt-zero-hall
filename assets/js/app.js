@@ -1181,25 +1181,25 @@
     ctx.fillStyle = 'rgba(247,242,230,0.45)';
     ctx.fillText(fmtDate(data.date), 86, 624);
 
-    var sx = W - 150;
-    var sy = 592;
+    var sx = W - 158;
+    var sy = 590;
     ctx.beginPath();
-    ctx.arc(sx, sy, 52, 0, Math.PI * 2);
+    ctx.arc(sx, sy, 58, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(201,163,73,0.7)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(sx, sy, 45, 0, Math.PI * 2);
+    ctx.arc(sx, sy, 50, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(201,163,73,0.3)';
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.textAlign = 'center';
-    setFont(ctx, '600 17px "Cinzel", serif', 3.5);
+    setFont(ctx, '600 15px "Cinzel", serif', 2.4);
     ctx.fillStyle = 'rgba(237,219,159,0.92)';
-    ctx.fillText('ZEROED', sx, sy + 2);
-    setFont(ctx, '500 7px "Cinzel", serif', 2);
+    ctx.fillText('ZEROED', sx, sy + 1);
+    setFont(ctx, '500 7px "Cinzel", serif', 1.8);
     ctx.fillStyle = 'rgba(201,163,73,0.8)';
-    ctx.fillText('EST. 2026', sx, sy + 20);
+    ctx.fillText('EST. 2026', sx, sy + 19);
 
     ctx.textAlign = 'center';
     setFont(ctx, '500 9px "Cinzel", serif', 3.2);
